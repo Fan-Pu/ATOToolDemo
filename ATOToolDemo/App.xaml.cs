@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using Fluent;
 
 namespace ATOToolDemo
 {
@@ -13,5 +14,11 @@ namespace ATOToolDemo
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            ThemeManager.ChangeThemeBaseColor(this, "Colorful");
+
+            base.OnStartup(e);
+        }
     }
 }
