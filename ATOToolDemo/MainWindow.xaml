@@ -8,18 +8,20 @@
     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:local="clr-namespace:ATOToolDemo"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     Title="ATO调试工具"
-    Width="800"
-    Height="450"
+    Width="1600"
+    Height="600"
+    Icon="Pictures/ATOTool.png"
     IsIconVisible="True"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
         <!--  用来绑定显示软件标题  -->
         <TextBlock
@@ -31,72 +33,488 @@
             x:Name="ribbon"
             Grid.Row="0"
             AutomaticStateManagement="True"
-            CanMinimize="False">
-            <Fluent:Ribbon.QuickAccessItems>
-                <Fluent:QuickAccessMenuItem IsChecked="true">
+            CanMinimize="True"
+            IsQuickAccessToolBarMenuDropDownVisible="False"
+            IsQuickAccessToolBarVisible="False">
+            <Fluent:RibbonTabItem Header="日志文件">
+                <Fluent:RibbonGroupBox Header="文件操作">
                     <Fluent:Button
-                        Command="{Binding SaveCommand}"
-                        Header="保存"/>
-                </Fluent:QuickAccessMenuItem>
-                <Fluent:QuickAccessMenuItem IsChecked="true">
+                        Padding="5"
+                        Command="{Binding ReadLogFilesCommand}"
+                        Header="读取文件"
+                        LargeIcon="Pictures/ReadLogFiles.png" />
                     <Fluent:Button
-                        Command="{Binding UndoCommand}"
-                        Header="撤销"/>
-                </Fluent:QuickAccessMenuItem>
-                <Fluent:QuickAccessMenuItem IsChecked="true">
+                        Padding="5"
+                        Command="{Binding SaveLogFileToExcelCommand}"
+                        Header="另存为EXCEL"
+                        LargeIcon="Pictures/SaveLogFileToEXCEL.png" />
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="评价指标">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <StackPanel Margin="5" Orientation="Horizontal">
+                            <TextBlock
+                                Margin="0,0,5,0"
+                                VerticalAlignment="Center"
+                                Text="当前文件 " />
+                            <xctk:WatermarkComboBox MinWidth="80" Watermark="选择文件" />
+                        </StackPanel>
+                        <StackPanel
+                            Grid.Row="1"
+                            Margin="5"
+                            Orientation="Horizontal">
+                            <TextBlock
+                                Margin="0,0,5,0"
+                                VerticalAlignment="Center"
+                                Text="当前列车 " />
+                            <xctk:WatermarkComboBox MinWidth="80" Watermark="选择列车" />
+                        </StackPanel>
+                    </Grid>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Fluent:TextBox
+                            MinWidth="100"
+                            Margin="5"
+                            Header="指标1"
+                            IsReadOnly="True" />
+                        <Fluent:TextBox
+                            Grid.Column="1"
+                            MinWidth="100"
+                            Margin="5"
+                            Header="指标2"
+                            IsReadOnly="True" />
+                        <Fluent:TextBox
+                            Grid.Column="2"
+                            MinWidth="100"
+                            Margin="5"
+                            Header="指标3"
+                            IsReadOnly="True" />
+                        <Fluent:TextBox
+                            Grid.Row="1"
+                            MinWidth="100"
+                            Margin="5"
+                            Header="指标4"
+                            IsReadOnly="True" />
+                        <Fluent:TextBox
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            MinWidth="100"
+                            Margin="5"
+                            Header="指标5"
+                            IsReadOnly="True" />
+                        <Fluent:TextBox
+                            Grid.Row="1"
+                            Grid.Column="2"
+                            MinWidth="100"
+                            Margin="5"
+                            Header="指标6"
+                            IsReadOnly="True" />
+                    </Grid>
                     <Fluent:Button
-                        Command="{Binding SelectLineCommand}"
-                        Header="选择线路"/>
-                </Fluent:QuickAccessMenuItem>
-            </Fluent:Ribbon.QuickAccessItems>
-            <Fluent:Ribbon.Menu>
-                <Grid>
-                    <Fluent:Backstage x:Name="Backstage">
-                        <Fluent:BackstageTabControl>
-                            <Fluent:Button
-                                Command="{Binding NewFileCommand}"
-                                Header="新建"/>
-                            <Fluent:Button
-                                Command="{Binding SaveCommand}"
-                                Header="保存"/>
-                            <Fluent:Button
-                                Command="{Binding OpenCommand}"
-                                Header="打开"/>
-                            <Fluent:SeparatorTabItem />
-                            <Fluent:BackstageTabItem Header="最近项目">
-                                <TabControl Margin="20,5,20,5" Style="{DynamicResource InnerBackstageTabControlStyle}">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="SelectionChanged">
-                                            <i:InvokeCommandAction Command="{Binding RecentSelectedCommand}" />
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                    <Fluent:SeparatorTabItem Header="近期打开的项目" />
-                                    <TabItem Header="{Binding RecentName}" />
-                                </TabControl>
-                            </Fluent:BackstageTabItem>
-                        </Fluent:BackstageTabControl>
-                    </Fluent:Backstage>
-                </Grid>
-            </Fluent:Ribbon.Menu>
-            <Fluent:RibbonTabItem Header="运行图">
-                <Fluent:RibbonGroupBox Header="运行图设置">
+                        Padding="5"
+                        Command="{Binding SaveLogFileToExcelCommand}"
+                        Header="更新"
+                        LargeIcon="Pictures/SaveLogFileToEXCEL.png" />
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>
+            <Fluent:RibbonTabItem Header="ASC配置文件" IsSelected="True">
+                <Fluent:RibbonGroupBox Header="文件操作">
                     <Fluent:Button
-                        Command="{Binding AddNewTimetableCommand}"
-                        Header="新建运行图"/>
+                        Padding="5"
+                        Command="{Binding ReadLogFilesCommand}"
+                        Header="读取文件"
+                        LargeIcon="Pictures/ReadLogFiles.png" />
                     <Fluent:Button
-                        Command="{Binding LoadTimetableCommand}"
-                        Header="加载运行图"/>
-                    <Fluent:Button
-                        Command="{Binding SaveTimetableFileCommand}"
-                        Header="另存为"/>
-                    <Fluent:Button
-                        Command="{Binding ReadTimetableFileCommand}"
-                        Header="读取文件"/>
-                    <Fluent:Button
-                        Command="{Binding TimetableVisualCommand}"
-                        Header="显示设置"/>
+                        Padding="5"
+                        Command="{Binding SaveLogFileToExcelCommand}"
+                        Header="另存为"
+                        LargeIcon="Pictures/SaveLogFileToEXCEL.png" />
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="评价指标">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <StackPanel Margin="5" Orientation="Horizontal">
+                            <TextBlock
+                                Margin="0,0,5,0"
+                                VerticalAlignment="Center"
+                                Text="当前文件 " />
+                            <xctk:WatermarkComboBox MinWidth="80" Watermark="选择文件" />
+                        </StackPanel>
+                        <StackPanel
+                            Grid.Row="1"
+                            Margin="5"
+                            Orientation="Horizontal">
+                            <TextBlock
+                                Margin="0,0,5,0"
+                                VerticalAlignment="Center"
+                                Text="当前列车 " />
+                            <xctk:WatermarkComboBox MinWidth="80" Watermark="选择列车" />
+                        </StackPanel>
+                    </Grid>
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="文件状态">
+                    <Grid Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Border
+                            Height="18"
+                            Margin="5"
+                            Background="Green"
+                            BorderBrush="Black"
+                            BorderThickness="1">
+                            <TextBlock
+                                Padding="5,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="White"
+                                Text="已修改" />
+                        </Border>
+                        <Border
+                            Grid.Row="1"
+                            Height="18"
+                            Margin="5"
+                            Background="Red"
+                            BorderBrush="Black"
+                            BorderThickness="1">
+                            <TextBlock
+                                Padding="5,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="White"
+                                Text="未保存" />
+                        </Border>
+                    </Grid>
                 </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>
         </Fluent:Ribbon>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <ScrollViewer HorizontalScrollBarVisibility="Visible">
+                <StackPanel
+                    Margin="5"
+                    HorizontalAlignment="Stretch"
+                    Orientation="Vertical">
+                    <GroupBox BorderBrush="Gray">
+                        <GroupBox.Header>
+                            <TextBlock Foreground="Red" Text="日志文件" />
+                        </GroupBox.Header>
+                        <StackPanel
+                            Margin="5"
+                            VerticalAlignment="Center"
+                            Orientation="Vertical">
+                            <StackPanel Margin="0,5" Orientation="Horizontal">
+                                <RadioButton
+                                    x:Name="single_train"
+                                    Margin="0,0,5,0"
+                                    GroupName="LogFileMode"
+                                    IsChecked="{Binding IsAutoPaintOutDepotTrain}" />
+                                <TextBlock Text="显示单一列车" />
+                            </StackPanel>
+                            <GroupBox
+                                BorderBrush="Gray"
+                                BorderThickness="1"
+                                Header="设置"
+                                IsEnabled="{Binding ElementName=single_train, Path=IsChecked}">
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel Margin="5" Orientation="Horizontal">
+                                        <TextBlock
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            Text="文件: " />
+                                        <xctk:WatermarkComboBox MinWidth="80" Watermark="选择文件" />
+                                    </StackPanel>
+                                    <StackPanel Margin="5" Orientation="Horizontal">
+                                        <TextBlock
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            Text="列车: " />
+                                        <xctk:WatermarkComboBox MinWidth="80" Watermark="选择列车" />
+                                    </StackPanel>
+                                    <Button
+                                        MinWidth="50"
+                                        Margin="5"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Center"
+                                        Content="显示" />
+                                </StackPanel>
+                            </GroupBox>
+
+                            <StackPanel Margin="0,5" Orientation="Horizontal">
+                                <RadioButton
+                                    x:Name="multi_train"
+                                    Margin="0,0,5,0"
+                                    GroupName="LogFileMode"
+                                    IsChecked="{Binding IsAutoPaintInDepotTrain}" />
+                                <TextBlock Text="显示多列车" />
+                            </StackPanel>
+
+                            <GroupBox
+                                BorderBrush="Gray"
+                                BorderThickness="1"
+                                Header="设置"
+                                IsEnabled="{Binding ElementName=multi_train, Path=IsChecked}">
+                                <StackPanel Orientation="Vertical">
+                                    <StackPanel Margin="0,5" Orientation="Horizontal">
+                                        <StackPanel Margin="5" Orientation="Horizontal">
+                                            <TextBlock
+                                                Margin="0,0,5,0"
+                                                VerticalAlignment="Center"
+                                                Text="文件: " />
+                                            <xctk:WatermarkComboBox MinWidth="80" Watermark="选择文件" />
+                                        </StackPanel>
+                                        <StackPanel Margin="5" Orientation="Horizontal">
+                                            <TextBlock
+                                                Margin="0,0,5,0"
+                                                VerticalAlignment="Center"
+                                                Text="列车: " />
+                                            <xctk:WatermarkComboBox MinWidth="80" Watermark="选择列车" />
+                                        </StackPanel>
+                                        <Button
+                                            MinWidth="50"
+                                            Margin="5"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Center"
+                                            Content="显示" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button
+                                            Margin="0,0,5,0"
+                                            Padding="10,2"
+                                            Content="添加" />
+                                        <Button
+                                            Margin="5,0"
+                                            Padding="10,2"
+                                            Content="删除" />
+                                        <Button
+                                            Margin="5,0"
+                                            Padding="10,2"
+                                            Content="上移" />
+                                        <Button
+                                            Margin="5,0"
+                                            Padding="10,2"
+                                            Content="下移" />
+                                        <Button
+                                            Margin="5,0"
+                                            Padding="10,2"
+                                            Content="更新" />
+                                    </StackPanel>
+                                    <ScrollViewer Margin="0,5">
+                                        <DataGrid
+                                            Height="100"
+                                            HorizontalScrollBarVisibility="Visible"
+                                            SelectionChanged="DataGrid_SelectionChanged">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn
+                                                    Width="auto"
+                                                    MinWidth="70"
+                                                    Header="文件" />
+                                                <DataGridTextColumn
+                                                    Width="auto"
+                                                    MinWidth="60"
+                                                    Header="列车" />
+                                                <DataGridComboBoxColumn
+                                                    Width="*"
+                                                    MinWidth="120"
+                                                    Header="区间" />
+                                                <DataGridComboBoxColumn
+                                                    Width="0.5*"
+                                                    MinWidth="70"
+                                                    Header="时间粒度" />
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </ScrollViewer>
+                                </StackPanel>
+                            </GroupBox>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <GroupBox BorderBrush="Gray">
+                        <GroupBox.Header>
+                            <TextBlock Foreground="Red" Text="ASC文件" />
+                        </GroupBox.Header>
+                        <StackPanel
+                            Margin="5"
+                            VerticalAlignment="Center"
+                            Orientation="Vertical">
+                            <GroupBox
+                                BorderBrush="Gray"
+                                BorderThickness="1"
+                                Header="设置">
+                                <StackPanel Orientation="Vertical">
+                                    <StackPanel Orientation="Horizontal">
+                                        <StackPanel Margin="5" Orientation="Horizontal">
+                                            <TextBlock
+                                                Margin="0,0,5,0"
+                                                VerticalAlignment="Center"
+                                                Text="文件: " />
+                                            <xctk:WatermarkComboBox
+                                                MinWidth="80"
+                                                VerticalAlignment="Center"
+                                                Watermark="选择文件" />
+                                            <StackPanel Margin="5" Orientation="Horizontal">
+                                                <TextBlock
+                                                    Margin="0,0,5,0"
+                                                    VerticalAlignment="Center"
+                                                    Text="列车: " />
+                                                <xctk:WatermarkComboBox MinWidth="80" Watermark="选择列车" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel Margin="5" Orientation="Horizontal">
+                                        <Button
+                                            MinWidth="50"
+                                            Margin="0,0,5,0"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Center"
+                                            Content="显示" />
+                                        <Button
+                                            MinWidth="50"
+                                            Margin="5"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Center"
+                                            Content="另存为" />
+                                        <TextBlock VerticalAlignment="Center" Text="状态: " />
+                                        <Border
+                                            Height="18"
+                                            Margin="5,0"
+                                            Background="Green"
+                                            BorderBrush="Black"
+                                            BorderThickness="1">
+                                            <TextBlock
+                                                Padding="5,0"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Foreground="White"
+                                                Text="已修改" />
+                                        </Border>
+                                        <Border
+                                            Height="18"
+                                            Margin="5,0"
+                                            Background="Red"
+                                            BorderBrush="Black"
+                                            BorderThickness="1">
+                                            <TextBlock
+                                                Padding="5,0"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Foreground="White"
+                                                Text="未保存" />
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
+                            </GroupBox>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
+            <GridSplitter
+                Grid.Column="1"
+                Width="5"
+                HorizontalAlignment="Center"
+                Background="LightGray"
+                Style="{StaticResource gridSplitterStyleForResizeColumns}" />
+            <Grid Grid.Column="2">
+                <Border BorderBrush="Gray" BorderThickness="3">
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                        <Image
+                            Margin="10"
+                            Source="Pictures/SpeedProfile.png"
+                            Stretch="Fill" />
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+            <GridSplitter
+                Grid.Column="3"
+                Width="5"
+                HorizontalAlignment="Center"
+                Background="LightGray"
+                Style="{StaticResource gridSplitterStyleForResizeColumns}" />
+            <Grid Grid.Column="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Image Source="Pictures\PropertyGrid.jpg" />
+                <GridSplitter
+                    Grid.Column="1"
+                    Width="5"
+                    HorizontalAlignment="Center"
+                    Background="LightGray"
+                    Style="{StaticResource gridSplitterStyleForResizeColumns}" />
+                <Image Grid.Column="2" Source="Pictures\PropertyGrid.jpg" />
+            </Grid>
+        </Grid>
+
+        <Fluent:StatusBar
+            Grid.Row="2"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Bottom">
+            <Fluent:StatusBarItem
+                Margin="10,0"
+                HorizontalAlignment="Left"
+                Value="15">
+                <Fluent:StatusBarItem.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Margin="0,0,10,0"
+                            VerticalAlignment="Center"
+                            Text="2021年5月6日" />
+                        <StackPanel Margin="10,0" Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center" Text="ASC配置文件状态: " />
+                            <Border
+                                Height="18"
+                                Margin="5,0"
+                                Background="Green"
+                                BorderBrush="Black"
+                                BorderThickness="1">
+                                <TextBlock
+                                    Padding="5,0"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Foreground="White"
+                                    Text="已修改" />
+                            </Border>
+                            <Border
+                                Height="18"
+                                Margin="5,0"
+                                Background="Red"
+                                BorderBrush="Black"
+                                BorderThickness="1">
+                                <TextBlock
+                                    Padding="5,0"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Foreground="White"
+                                    Text="未保存" />
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </Fluent:StatusBarItem.Content>
+            </Fluent:StatusBarItem>
+        </Fluent:StatusBar>
     </Grid>
 </Fluent:RibbonWindow>
