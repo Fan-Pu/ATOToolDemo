@@ -458,7 +458,7 @@ namespace ATOToolDemo.ViewModel
             {
                 parames_Asc = value;
                 RaisePropertyChanged();
-                
+
             }
         }
 
@@ -466,12 +466,14 @@ namespace ATOToolDemo.ViewModel
         public int AscData
         {
             get { return ascData; }
-            set { ascData = value;
+            set
+            {
+                ascData = value;
                 RaisePropertyChanged();
-                if (Last_Ascidx != -1 )
+                if (Last_Ascidx != -1)
                 {
-                    if(Parames_Asc[Last_Ascidx].Data != Last_AscData)
-                    Vis_Change = Visibility.Visible;
+                    if (Parames_Asc[Last_Ascidx].Data != Last_AscData)
+                        Vis_Change = Visibility.Visible;
                 }
                 Last_Ascidx = Curr_Ascpara_idx;
                 Last_AscData = AscData;
@@ -482,7 +484,9 @@ namespace ATOToolDemo.ViewModel
         public int Last_Ascidx
         {
             get { return last_Ascidx; }
-            set { last_Ascidx = value;
+            set
+            {
+                last_Ascidx = value;
             }
         }
 
@@ -494,7 +498,7 @@ namespace ATOToolDemo.ViewModel
             {
                 curr_Ascfile_idx = value;
                 RaisePropertyChanged();
-                
+
             }
         }
 
@@ -502,7 +506,9 @@ namespace ATOToolDemo.ViewModel
         public int Curr_Ascpara_idx
         {
             get { return curr_Ascpara_idx; }
-            set { curr_Ascpara_idx = value;
+            set
+            {
+                curr_Ascpara_idx = value;
                 RaisePropertyChanged();
             }
         }
@@ -521,7 +527,9 @@ namespace ATOToolDemo.ViewModel
         public string NowTime
         {
             get { return nowTime; }
-            set { nowTime = value;
+            set
+            {
+                nowTime = value;
                 RaisePropertyChanged();
             }
         }
@@ -530,7 +538,9 @@ namespace ATOToolDemo.ViewModel
         public Visibility Vis_Change
         {
             get { return vis_Change; }
-            set { vis_Change = value;
+            set
+            {
+                vis_Change = value;
                 RaisePropertyChanged();
             }
         }
@@ -539,7 +549,9 @@ namespace ATOToolDemo.ViewModel
         public Visibility Vis_Save
         {
             get { return vis_Save; }
-            set { vis_Save = value;
+            set
+            {
+                vis_Save = value;
                 RaisePropertyChanged();
             }
         }
@@ -621,7 +633,7 @@ namespace ATOToolDemo.ViewModel
             Curr_fileSingle_idx = -1;
             Curr_trainSingle_idx = -1;
             Curr_Ascfile_idx = -1;
-            Last_Ascidx = -1; 
+            Last_Ascidx = -1;
         }   //≥ı ºªØ Ù–‘
 
         private void InitCommands()
@@ -875,6 +887,7 @@ namespace ATOToolDemo.ViewModel
         {
             InitProperties();
             InitCommands();
+            string dasdaa = "";
         }
     }
 
