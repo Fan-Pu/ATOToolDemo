@@ -9,6 +9,7 @@
     xmlns:local="clr-namespace:ATOToolDemo"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
     Title="ATO调试工具"
     Width="1600"
     Height="600"
@@ -23,12 +24,12 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
-        <!--  用来绑定显示软件标题  -->
+
+
         <TextBlock
             x:Name="TitleString"
             Text="ATO调试工具"
             Visibility="Collapsed" />
-
         <Fluent:Ribbon
             x:Name="ribbon"
             Grid.Row="0"
@@ -60,7 +61,14 @@
                                 Margin="0,0,5,0"
                                 VerticalAlignment="Center"
                                 Text="当前文件 " />
-                            <xctk:WatermarkComboBox MinWidth="80" Watermark="选择文件" />
+                            <xctk:WatermarkComboBox
+                                Height="21"
+                                Width="80"
+                                Margin="0,0,0,-0.025"
+                                VerticalAlignment="Top"
+                                ItemsSource="{Binding FileNames_Sim}"
+                                SelectedIndex="{Binding Curr_file_idx, Mode=TwoWay}"
+                                Watermark="选择文件" />
                         </StackPanel>
                         <StackPanel
                             Grid.Row="1"
@@ -70,7 +78,11 @@
                                 Margin="0,0,5,0"
                                 VerticalAlignment="Center"
                                 Text="当前列车 " />
-                            <xctk:WatermarkComboBox MinWidth="80" Watermark="选择列车" />
+                            <xctk:WatermarkComboBox
+                                Width="80"
+                                ItemsSource="{Binding TrainNameList}"
+                                SelectedIndex="{Binding Curr_train_idx, Mode=TwoWay}"
+                                Watermark="选择列车" />
                         </StackPanel>
                     </Grid>
                     <Grid>
@@ -87,43 +99,50 @@
                             MinWidth="100"
                             Margin="5"
                             Header="指标1"
-                            IsReadOnly="True" />
+                            IsReadOnly="True"
+                            Text="{Binding Description}" />
                         <Fluent:TextBox
                             Grid.Column="1"
                             MinWidth="100"
                             Margin="5"
                             Header="指标2"
-                            IsReadOnly="True" />
+                            IsReadOnly="True"
+                            Text="{Binding EOSA_Time}" />
                         <Fluent:TextBox
                             Grid.Column="2"
                             MinWidth="100"
                             Margin="5"
                             Header="指标3"
-                            IsReadOnly="True" />
+                            IsReadOnly="True"
+                            Text="{Binding Dist}" />
                         <Fluent:TextBox
                             Grid.Row="1"
                             MinWidth="100"
                             Margin="5"
                             Header="指标4"
-                            IsReadOnly="True" />
+                            IsReadOnly="True"
+                            Text="{Binding Total_Mileage}" />
                         <Fluent:TextBox
                             Grid.Row="1"
                             Grid.Column="1"
                             MinWidth="100"
                             Margin="5"
                             Header="指标5"
-                            IsReadOnly="True" />
+                            IsReadOnly="True"
+                            Text="{Binding Train_Speed}" />
                         <Fluent:TextBox
                             Grid.Row="1"
                             Grid.Column="2"
                             MinWidth="100"
                             Margin="5"
                             Header="指标6"
-                            IsReadOnly="True" />
+                            IsReadOnly="True"
+                            Text="{Binding Braking_Level}" />
+
                     </Grid>
                     <Fluent:Button
                         Padding="5"
-                        Command="{Binding SaveLogFileToExcelCommand}"
+                        Command="{Binding UpdataIndicator}"
                         Header="更新"
                         LargeIcon="Pictures/SaveLogFileToEXCEL.png" />
                 </Fluent:RibbonGroupBox>
@@ -132,7 +151,7 @@
                 <Fluent:RibbonGroupBox Header="文件操作">
                     <Fluent:Button
                         Padding="5"
-                        Command="{Binding ReadLogFilesCommand}"
+                        Command="{Binding Read_AscFiles}"
                         Header="读取文件"
                         LargeIcon="Pictures/ReadLogFiles.png" />
                     <Fluent:Button
@@ -152,17 +171,25 @@
                                 Margin="0,0,5,0"
                                 VerticalAlignment="Center"
                                 Text="当前文件 " />
-                            <xctk:WatermarkComboBox MinWidth="80" Watermark="选择文件" />
+                            <xctk:WatermarkComboBox
+                                MinWidth="80"
+                                ItemsSource="{Binding AscSimFileNames}"
+                                SelectedIndex="{Binding Curr_Ascfile_idx}"
+                                Watermark="选择文件" />
                         </StackPanel>
                         <StackPanel
                             Grid.Row="1"
                             Margin="5"
                             Orientation="Horizontal">
-                            <TextBlock
+                            <!--<TextBlock
                                 Margin="0,0,5,0"
                                 VerticalAlignment="Center"
                                 Text="当前列车 " />
-                            <xctk:WatermarkComboBox MinWidth="80" Watermark="选择列车" />
+                            <xctk:WatermarkComboBox
+                                MinWidth="80"
+                                ItemsSource="{Binding TrainNameList}"
+                                SelectedIndex="{Binding Curr_train_idx}"
+                                Watermark="选择列车" />-->
                         </StackPanel>
                     </Grid>
                 </Fluent:RibbonGroupBox>
@@ -177,13 +204,17 @@
                             Margin="5"
                             Background="Green"
                             BorderBrush="Black"
-                            BorderThickness="1">
+                            BorderThickness="1"
+                            Visibility="{Binding Vis_Change}">
+
                             <TextBlock
                                 Padding="5,0"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Foreground="White"
-                                Text="已修改" />
+                                Text="已修改"
+                                
+                                />
                         </Border>
                         <Border
                             Grid.Row="1"
@@ -191,13 +222,17 @@
                             Margin="5"
                             Background="Red"
                             BorderBrush="Black"
-                            BorderThickness="1">
+                            BorderThickness="1"
+                            Visibility="{Binding Vis_Save}"
+                            
+                            >
                             <TextBlock
                                 Padding="5,0"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Foreground="White"
-                                Text="未保存" />
+                                Text="未保存"
+                                />
                         </Border>
                     </Grid>
                 </Fluent:RibbonGroupBox>
@@ -210,7 +245,7 @@
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition Width="4*" />
                 <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="3*" />
             </Grid.ColumnDefinitions>
             <ScrollViewer HorizontalScrollBarVisibility="Visible">
                 <StackPanel
@@ -244,21 +279,31 @@
                                             Margin="0,0,5,0"
                                             VerticalAlignment="Center"
                                             Text="文件: " />
-                                        <xctk:WatermarkComboBox MinWidth="80" Watermark="选择文件" />
+                                        <xctk:WatermarkComboBox
+                                            Width="80"
+                                            ItemsSource="{Binding FileNames_Sim}"
+                                            SelectedIndex="{Binding Curr_fileSingle_idx}"
+                                            Watermark="选择文件" />
                                     </StackPanel>
                                     <StackPanel Margin="5" Orientation="Horizontal">
                                         <TextBlock
                                             Margin="0,0,5,0"
                                             VerticalAlignment="Center"
                                             Text="列车: " />
-                                        <xctk:WatermarkComboBox MinWidth="80" Watermark="选择列车" />
+                                        <xctk:WatermarkComboBox
+                                            Width="80"
+                                            ItemsSource="{Binding TrainNameList_LogSingle}"
+                                            SelectedIndex="{Binding Curr_trainSingle_idx}"
+                                            Watermark="选择列车" />
                                     </StackPanel>
                                     <Button
                                         MinWidth="50"
                                         Margin="5"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Center"
-                                        Content="显示" />
+                                        Content="显示"
+                                        Command="{Binding ShowSingleTrain}"
+                                        />
                                 </StackPanel>
                             </GroupBox>
 
@@ -283,66 +328,109 @@
                                                 Margin="0,0,5,0"
                                                 VerticalAlignment="Center"
                                                 Text="文件: " />
-                                            <xctk:WatermarkComboBox MinWidth="80" Watermark="选择文件" />
+                                            <xctk:WatermarkComboBox
+                                                Width="80"
+                                                ItemsSource="{Binding FileNames_Sim}"
+                                                SelectedIndex="{Binding Curr_fileMult_idx}"
+                                                SelectionChanged="WatermarkComboBox_SelectionChanged"
+                                                Watermark="选择文件" />
                                         </StackPanel>
                                         <StackPanel Margin="5" Orientation="Horizontal">
                                             <TextBlock
                                                 Margin="0,0,5,0"
                                                 VerticalAlignment="Center"
                                                 Text="列车: " />
-                                            <xctk:WatermarkComboBox MinWidth="80" Watermark="选择列车" />
+                                            <xctk:WatermarkComboBox
+                                                Width="80"
+                                                ItemsSource="{Binding TrainNameList_LogMult}"
+                                                SelectedIndex="{Binding Curr_trainMult_idx}"
+                                                Watermark="选择列车" 
+                                                
+                                                />
                                         </StackPanel>
                                         <Button
                                             MinWidth="50"
                                             Margin="5"
                                             HorizontalAlignment="Stretch"
                                             VerticalAlignment="Center"
-                                            Content="显示" />
+                                            Content="显示" 
+                                            Command="{Binding ShowMultTrain}"
+                                            />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal">
                                         <Button
                                             Margin="0,0,5,0"
                                             Padding="10,2"
+                                            Command="{Binding AddLogFile}"
                                             Content="添加" />
                                         <Button
                                             Margin="5,0"
                                             Padding="10,2"
-                                            Content="删除" />
+                                            Content="删除"
+                                            Command="{Binding DeleteMultTrain}"
+                                            />
                                         <Button
                                             Margin="5,0"
                                             Padding="10,2"
-                                            Content="上移" />
+                                            Content="上移" 
+                                            Command="{Binding MoveUp}"
+                                            />
                                         <Button
                                             Margin="5,0"
                                             Padding="10,2"
-                                            Content="下移" />
+                                            Content="下移"
+                                            Command="{Binding MoveDown}"
+                                            />
                                         <Button
                                             Margin="5,0"
                                             Padding="10,2"
-                                            Content="更新" />
+                                            Content="更新"
+                                            Command="{Binding UpdataMultTrain}"
+                                            />
                                     </StackPanel>
                                     <ScrollViewer Margin="0,5">
                                         <DataGrid
                                             Height="100"
+                                            VerticalAlignment="Top"
+                                            AutoGenerateColumns="False"
                                             HorizontalScrollBarVisibility="Visible"
+                                            ItemsSource="{Binding LogFileProp_Mult, Mode=TwoWay}"
+                                            SelectedIndex="{Binding Curr_MultProp_idx}"
                                             SelectionChanged="DataGrid_SelectionChanged">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn
                                                     Width="auto"
                                                     MinWidth="70"
+                                                    Binding="{Binding FileName_logMult}"
                                                     Header="文件" />
                                                 <DataGridTextColumn
                                                     Width="auto"
                                                     MinWidth="60"
+                                                    Binding="{Binding Train_logMult}"
                                                     Header="列车" />
-                                                <DataGridComboBoxColumn
+                                                <DataGridTemplateColumn
                                                     Width="*"
                                                     MinWidth="120"
-                                                    Header="区间" />
-                                                <DataGridComboBoxColumn
-                                                    Width="0.5*"
-                                                    MinWidth="70"
-                                                    Header="时间粒度" />
+                                                    Header="区间">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <ComboBox ItemsSource="{Binding Interval}" 
+                                                                      SelectedIndex="{Binding Interval_idx}" />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTemplateColumn
+                                                    Width="*"
+                                                    MinWidth="120"
+                                                    Header="时间粒度">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <ComboBox ItemsSource="{Binding Granularity}"
+                                                                      SelectedIndex="{Binding Gra_idx}" />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </ScrollViewer>
@@ -371,15 +459,20 @@
                                                 VerticalAlignment="Center"
                                                 Text="文件: " />
                                             <xctk:WatermarkComboBox
-                                                MinWidth="80"
+                                                Width="80"
                                                 VerticalAlignment="Center"
+                                                ItemsSource="{Binding AscSimFileNames}"
+                                                SelectedIndex="{Binding Curr_Ascfile_idx}"
                                                 Watermark="选择文件" />
                                             <StackPanel Margin="5" Orientation="Horizontal">
-                                                <TextBlock
+                                                <!--<TextBlock
                                                     Margin="0,0,5,0"
                                                     VerticalAlignment="Center"
                                                     Text="列车: " />
-                                                <xctk:WatermarkComboBox MinWidth="80" Watermark="选择列车" />
+                                                <xctk:WatermarkComboBox
+                                                    Width="80"
+                                                    ItemsSource="{Binding TrainNameList}"
+                                                    Watermark="选择列车" />-->
                                             </StackPanel>
                                         </StackPanel>
                                     </StackPanel>
@@ -389,7 +482,9 @@
                                             Margin="0,0,5,0"
                                             HorizontalAlignment="Stretch"
                                             VerticalAlignment="Center"
-                                            Content="显示" />
+                                            Content="显示"
+                                            Command="{Binding Show_AscDatas}"
+                                            />
                                         <Button
                                             MinWidth="50"
                                             Margin="5"
@@ -402,26 +497,31 @@
                                             Margin="5,0"
                                             Background="Green"
                                             BorderBrush="Black"
-                                            BorderThickness="1">
+                                            BorderThickness="1"
+                                            Visibility="{Binding Vis_Change}">
                                             <TextBlock
                                                 Padding="5,0"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 Foreground="White"
-                                                Text="已修改" />
+                                                Text="已修改"
+                                                 />
                                         </Border>
                                         <Border
                                             Height="18"
                                             Margin="5,0"
                                             Background="Red"
                                             BorderBrush="Black"
-                                            BorderThickness="1">
+                                            BorderThickness="1"
+                                            Visibility="{Binding Vis_Save}"
+                                            >
                                             <TextBlock
                                                 Padding="5,0"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 Foreground="White"
-                                                Text="未保存" />
+                                                Text="未保存"
+                                                />
                                         </Border>
                                     </StackPanel>
                                 </StackPanel>
@@ -436,16 +536,23 @@
                 HorizontalAlignment="Center"
                 Background="LightGray"
                 Style="{StaticResource gridSplitterStyleForResizeColumns}" />
-            <Grid Grid.Column="2">
+            <ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Visible" >
                 <Border BorderBrush="Gray" BorderThickness="3">
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-                        <Image
-                            Margin="10"
-                            Source="Pictures/SpeedProfile.png"
-                            Stretch="Fill" />
+                        <lvc:CartesianChart >
+                            <lvc:CartesianChart Series="{Binding SeriesCollection}">
+                                <lvc:CartesianChart.AxisX>
+                                    <lvc:Axis x:Name="hobushAxisX" Labels="{Binding Labels_X}">
+                                    </lvc:Axis> 
+                                </lvc:CartesianChart.AxisX>
+                                <lvc:CartesianChart.AxisY>
+                                    <lvc:Axis x:Name="hobushAxisY" MaxValue="1000" MinValue="0" Labels="{Binding Labels_Y}"></lvc:Axis>
+                                </lvc:CartesianChart.AxisY>
+                            </lvc:CartesianChart>
+                        </lvc:CartesianChart>
                     </ScrollViewer>
                 </Border>
-            </Grid>
+            </ScrollViewer>
             <GridSplitter
                 Grid.Column="3"
                 Width="5"
@@ -454,18 +561,111 @@
                 Style="{StaticResource gridSplitterStyleForResizeColumns}" />
             <Grid Grid.Column="4">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="5" />
-                    <ColumnDefinition />
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Image Source="Pictures\PropertyGrid.jpg" />
+                
+                    <DataGrid
+                       Grid.Column="0"
+                       Height="440"
+                       VerticalAlignment="Top"
+                       AutoGenerateColumns="False"
+                       HorizontalScrollBarVisibility="Auto"
+                       ItemsSource="{Binding Parames_Asc, Mode=OneTime}"
+                       SelectedItem="{Binding Parame_Asc}"
+                       SelectionChanged="DataGrid_SelectionChanged">
+                        <DataGrid.Columns>
+                        <DataGridTextColumn 
+                            Width="auto"
+                            MinWidth="70"
+                            Binding="{Binding Name,Mode=OneTime}"
+                            Header="参数名" 
+                            IsReadOnly="True"
+                            >
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="ToolTip" Value="{Binding Tips}" />
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                            <DataGridTextColumn
+                            Width="auto"
+                            MinWidth="70"
+                            Binding="{Binding Data, Mode=OneTime}"
+                            Header="数值"
+                            IsReadOnly="True"
+                                />
+                            <DataGridTextColumn
+                            Width="auto"
+                            MinWidth="120"
+                            Header="取值范围"
+                            IsReadOnly="True"
+                            Binding="{Binding Range}"
+                                />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                
+
+                <!--<xctk:PropertyGrid  Grid.Column="0" AutoGenerateProperties="True" 
+                ShowSortOptions="True" SelectedObject="{Binding }">
+                    
+                    --><!--<xctk:PropertyGrid.PropertyDefinitions>
+                        <xctk:PropertyDefinition TargetProperties="FirstName" />
+                        <xctk:PropertyDefinition TargetProperties="FavoriteColor" />
+                        <xctk:PropertyDefinition TargetProperties="PetNames" />
+                    </xctk:PropertyGrid.PropertyDefinitions>--><!--
+                </xctk:PropertyGrid>
+                --><!--<Image Source="Pictures\PropertyGrid.jpg" />-->
                 <GridSplitter
                     Grid.Column="1"
                     Width="5"
                     HorizontalAlignment="Center"
                     Background="LightGray"
                     Style="{StaticResource gridSplitterStyleForResizeColumns}" />
-                <Image Grid.Column="2" Source="Pictures\PropertyGrid.jpg" />
+
+                <DataGrid
+                       Grid.Column="2"
+                       Height="440"
+                       VerticalAlignment="Top"
+                       AutoGenerateColumns="False"
+                       HorizontalScrollBarVisibility="Auto"
+                       ItemsSource="{Binding Parames_Asc, Mode=TwoWay}"
+                       SelectedIndex="{Binding Curr_Ascpara_idx,Mode=TwoWay}"
+                       SelectedValue="{Binding AscData,Mode=TwoWay}"
+                       SelectedValuePath="Data"
+                       SelectionChanged="DataGrid_SelectionChanged">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn 
+                            Width="auto"
+                            MinWidth="70"
+                            Binding="{Binding Name,Mode=TwoWay}"
+                            Header="参数名" 
+                            IsReadOnly="True"
+                            >
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="ToolTip" Value="{Binding Tips}" />
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn
+                            Width="auto"
+                            MinWidth="70"
+                            Binding="{Binding Data, Mode=TwoWay}"
+                            Header="数值"
+                            IsReadOnly="False"
+                                />
+                        <DataGridTextColumn
+                            Width="auto"
+                            MinWidth="120"
+                            Header="取值范围"
+                            IsReadOnly="True"
+                            Binding="{Binding Range}"
+                                />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <!--<Image Grid.Column="2" Source="Pictures\PropertyGrid.jpg" />-->
             </Grid>
         </Grid>
 
@@ -482,7 +682,7 @@
                         <TextBlock
                             Margin="0,0,10,0"
                             VerticalAlignment="Center"
-                            Text="2021年5月6日" />
+                            Text="{Binding NowTime}" />
                         <StackPanel Margin="10,0" Orientation="Horizontal">
                             <TextBlock VerticalAlignment="Center" Text="ASC配置文件状态: " />
                             <Border
@@ -490,26 +690,34 @@
                                 Margin="5,0"
                                 Background="Green"
                                 BorderBrush="Black"
-                                BorderThickness="1">
+                                BorderThickness="1"
+                                Visibility="{Binding Vis_Change}"
+                                >
                                 <TextBlock
                                     Padding="5,0"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Foreground="White"
-                                    Text="已修改" />
+                                    Text="已修改"
+                                     
+                                    />
                             </Border>
                             <Border
                                 Height="18"
                                 Margin="5,0"
                                 Background="Red"
                                 BorderBrush="Black"
-                                BorderThickness="1">
+                                BorderThickness="1"
+                                Visibility="{Binding Vis_Save}"
+                                >
                                 <TextBlock
                                     Padding="5,0"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Foreground="White"
-                                    Text="未保存" />
+                                    Text="未保存"
+                                    
+                                    />
                             </Border>
                         </StackPanel>
                     </StackPanel>
