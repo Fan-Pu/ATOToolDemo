@@ -156,7 +156,7 @@
                         LargeIcon="Pictures/ReadLogFiles.png" />
                     <Fluent:Button
                         Padding="5"
-                        Command="{Binding SaveLogFileToExcelCommand}"
+                        Command="{Binding Save_AscNewFiles}"
                         Header="另存为"
                         LargeIcon="Pictures/SaveLogFileToEXCEL.png" />
                 </Fluent:RibbonGroupBox>
@@ -490,7 +490,9 @@
                                             Margin="5"
                                             HorizontalAlignment="Stretch"
                                             VerticalAlignment="Center"
-                                            Content="另存为" />
+                                            Content="另存为" 
+                                            Command="{Binding Save_AscNewFiles}"
+                                            />
                                         <TextBlock VerticalAlignment="Center" Text="状态: " />
                                         <Border
                                             Height="18"
@@ -565,65 +567,51 @@
                     <ColumnDefinition Width="5" />
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                
-                    <DataGrid
+                <DataGrid
                        Grid.Column="0"
                        Height="440"
                        VerticalAlignment="Top"
                        AutoGenerateColumns="False"
                        HorizontalScrollBarVisibility="Auto"
                        ItemsSource="{Binding Parames_Asc, Mode=OneTime}"
-                       SelectedItem="{Binding Parame_Asc}"
                        SelectionChanged="DataGrid_SelectionChanged">
-                        <DataGrid.Columns>
+                    <DataGrid.Columns>
                         <DataGridTextColumn 
                             Width="auto"
                             MinWidth="70"
-                            Binding="{Binding Name,Mode=OneTime}"
+                            Binding="{Binding Name,Mode=OneWay}"
                             Header="参数名" 
-                            IsReadOnly="True"
-                            >
+                            IsReadOnly="True">
                             <DataGridTextColumn.CellStyle>
                                 <Style TargetType="DataGridCell">
                                     <Setter Property="ToolTip" Value="{Binding Tips}" />
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>
-                            <DataGridTextColumn
+                        <DataGridTemplateColumn
                             Width="auto"
                             MinWidth="70"
-                            Binding="{Binding Data, Mode=OneTime}"
-                            Header="数值"
-                            IsReadOnly="True"
-                                />
-                            <DataGridTextColumn
+                            Header="数值">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Background="Transparent" Text="{Binding Data,Mode=OneTime}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn
                             Width="auto"
                             MinWidth="120"
                             Header="取值范围"
                             IsReadOnly="True"
-                            Binding="{Binding Range}"
-                                />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                
-
-                <!--<xctk:PropertyGrid  Grid.Column="0" AutoGenerateProperties="True" 
-                ShowSortOptions="True" SelectedObject="{Binding }">
-                    
-                    --><!--<xctk:PropertyGrid.PropertyDefinitions>
-                        <xctk:PropertyDefinition TargetProperties="FirstName" />
-                        <xctk:PropertyDefinition TargetProperties="FavoriteColor" />
-                        <xctk:PropertyDefinition TargetProperties="PetNames" />
-                    </xctk:PropertyGrid.PropertyDefinitions>--><!--
-                </xctk:PropertyGrid>
-                --><!--<Image Source="Pictures\PropertyGrid.jpg" />-->
+                            Binding="{Binding Range}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
                 <GridSplitter
                     Grid.Column="1"
                     Width="5"
                     HorizontalAlignment="Center"
                     Background="LightGray"
                     Style="{StaticResource gridSplitterStyleForResizeColumns}" />
-
                 <DataGrid
                        Grid.Column="2"
                        Height="440"
@@ -641,31 +629,40 @@
                             MinWidth="70"
                             Binding="{Binding Name,Mode=TwoWay}"
                             Header="参数名" 
-                            IsReadOnly="True"
-                            >
+                            IsReadOnly="True">
                             <DataGridTextColumn.CellStyle>
                                 <Style TargetType="DataGridCell">
                                     <Setter Property="ToolTip" Value="{Binding Tips}" />
+                                    <Setter Property="Background" Value="{Binding Asc_Background,Mode=TwoWay}"/>
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn
+                        <DataGridTextColumn 
                             Width="auto"
                             MinWidth="70"
-                            Binding="{Binding Data, Mode=TwoWay}"
-                            Header="数值"
-                            IsReadOnly="False"
-                                />
-                        <DataGridTextColumn
+                            Binding="{Binding Data,Mode=TwoWay}"
+                            Header="数值" 
+                            IsReadOnly="False">
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="Background" Value="{Binding Asc_Background,Mode=TwoWay}"/>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn 
                             Width="auto"
-                            MinWidth="120"
-                            Header="取值范围"
-                            IsReadOnly="True"
-                            Binding="{Binding Range}"
-                                />
+                            MinWidth="70"
+                            Binding="{Binding Range,Mode=TwoWay}"
+                            Header="取值范围" 
+                            IsReadOnly="True">
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="Background" Value="{Binding Asc_Background,Mode=TwoWay}"/>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-                <!--<Image Grid.Column="2" Source="Pictures\PropertyGrid.jpg" />-->
             </Grid>
         </Grid>
 

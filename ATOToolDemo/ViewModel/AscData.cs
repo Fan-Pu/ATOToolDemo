@@ -3,50 +3,63 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GalaSoft.MvvmLight;
 using System.Windows;
+using System.Windows.Media;
 
 namespace ATOToolDemo.ViewModel
 {
-    public class AscData:ViewModelBase
+    public class AscData
     {
         private string name;
         public string Name
         {
             get { return name; }
-            set { name = value;
+            set { name = value;   
+            }
+        }
+
+        private string data;
+        public string Data
+        {
+            get { return data; }
+            set { data = value;
                 
             }
         }
 
-        private int data;
-        public int Data
-        {
-            get { return data; }
-            set { data = value;
-                RaisePropertyChanged();
-            }
-        }
-
         private string range;
-
         public string Range
         {
             get { return range; }
             set { range = value;
-              
             }
         }
 
         private string tips;
-
         public string Tips
         {
             get { return tips; }
-            set { tips = value;
-               
+            set { tips = value;  
             }
         }
+
+        private SolidColorBrush asc_Background;
+        public SolidColorBrush Asc_Background
+        {
+            get { return asc_Background; }
+            set
+            {
+                asc_Background = value; 
+            }
+        }
+
+        private string data_property;
+        public string Data_Property
+        {
+            get { return data_property; }
+            set { data_property = value; }
+        }
+
 
     }
 }

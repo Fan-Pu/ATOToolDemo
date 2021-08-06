@@ -17,7 +17,6 @@ namespace ATOToolDemo
         protected override void OnStartup(StartupEventArgs e)
         {
             ThemeManager.ChangeThemeBaseColor(this, "Colorful");
-
             base.OnStartup(e);
         }
     }

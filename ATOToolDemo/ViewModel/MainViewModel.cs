@@ -16,6 +16,7 @@ using System.IO;
 using System.Text;
 using System;
 using System.Windows;
+using System.Windows.Media;
 
 namespace ATOToolDemo.ViewModel
 {
@@ -440,7 +441,7 @@ namespace ATOToolDemo.ViewModel
         }
 
         private BindingList<string> data_Asc;
-        public BindingList<string> Data_Asc
+        public BindingList<string> Datas_Asc
         {
             get { return data_Asc; }
             set
@@ -462,8 +463,8 @@ namespace ATOToolDemo.ViewModel
             }
         }
 
-        private int ascData;
-        public int AscData
+        private string ascData;
+        public string AscData
         {
             get { return ascData; }
             set
@@ -473,7 +474,10 @@ namespace ATOToolDemo.ViewModel
                 if (Last_Ascidx != -1)
                 {
                     if (Parames_Asc[Last_Ascidx].Data != Last_AscData)
+                    {
                         Vis_Change = Visibility.Visible;
+                        parames_Asc[Last_Ascidx].Asc_Background = new SolidColorBrush(Colors.Green);
+                    }
                 }
                 Last_Ascidx = Curr_Ascpara_idx;
                 Last_AscData = AscData;
@@ -513,12 +517,20 @@ namespace ATOToolDemo.ViewModel
             }
         }
 
-        private int last_AscData;
-        public int Last_AscData
+        private string last_AscData;
+        public string Last_AscData
         {
             get { return last_AscData; }
             set { last_AscData = value; }
         }
+
+        private List<string> save_NewDatas;
+        public List<string> Save_NewDatas
+        {
+            get { return save_NewDatas; }
+            set { save_NewDatas = value; }
+        }
+
 
         #endregion
 
@@ -555,6 +567,7 @@ namespace ATOToolDemo.ViewModel
                 RaisePropertyChanged();
             }
         }
+
 
 
         #endregion
@@ -605,8 +618,9 @@ namespace ATOToolDemo.ViewModel
         #endregion
 
         #region [ASC]
-
         public RelayCommand Show_AscDatas { get; set; }
+
+        public RelayCommand Save_AscNewFiles { get; set; }
         #endregion
 
         #endregion
@@ -621,11 +635,13 @@ namespace ATOToolDemo.ViewModel
             LogFileProp_Mult = new BindingList<LogFile_Mult>();
             Parames_Asc = new BindingList<AscData>();
 
+
             DateTime dt = DateTime.Now;
             NowTime = dt.ToLongDateString().ToString();
 
             Vis_Change = Visibility.Hidden;
             vis_Save = Visibility.Hidden;
+
             Curr_file_idx = -1;
             Curr_train_idx = -1;
             Curr_trainMult_idx = -1;
@@ -633,7 +649,7 @@ namespace ATOToolDemo.ViewModel
             Curr_fileSingle_idx = -1;
             Curr_trainSingle_idx = -1;
             Curr_Ascfile_idx = -1;
-            Last_Ascidx = -1;
+
         }   //初始化属性
 
         private void InitCommands()
@@ -650,6 +666,7 @@ namespace ATOToolDemo.ViewModel
             UpdataMultTrain = new RelayCommand(updataMultTrain);
             Read_AscFiles = new RelayCommand(read_AscFiles);
             Show_AscDatas = new RelayCommand(show_AscDatas);
+            Save_AscNewFiles = new RelayCommand(save_AscNewFiles);
         }  //初始化命令
 
         #region [文件操作]
@@ -835,7 +852,7 @@ namespace ATOToolDemo.ViewModel
         {
             try
             {
-                Data_Asc = new BindingList<string>();
+                Datas_Asc = new BindingList<string>();
                 using (StreamReader read_Asc = new StreamReader(AscFileNames[Curr_Ascfile_idx], Encoding.Default))
                 {
                     int lineCount = 0;
@@ -844,16 +861,16 @@ namespace ATOToolDemo.ViewModel
                         lineCount++;
                         string temp = read_Asc.ReadLine();
                         if (!temp.Contains("#"))
-                            Data_Asc.Add(temp);
+                            Datas_Asc.Add(temp);
                     }
                 }
-                for (int i = 0; i < Data_Asc.Count; i++)
+                for (int i = 0; i < Datas_Asc.Count; i++)
                 {
                     int idx_begin;
                     int idx_end;
                     int length;
                     AscData tempPara = new AscData();
-                    string temp = Data_Asc[i];
+                    string temp = Datas_Asc[i];
 
                     idx_end = temp.IndexOf("=");
                     tempPara.Name = temp.Substring(0, idx_end).TrimEnd();
@@ -867,17 +884,53 @@ namespace ATOToolDemo.ViewModel
                     idx_begin = temp.IndexOf(">") + 1;
                     idx_end = temp.IndexOf("@") - 1;
                     length = idx_end - idx_begin + 1;
-                    try { tempPara.Data = int.Parse(temp.Substring(idx_begin, length).Trim()); }
-                    catch { tempPara.Data = int.Parse(temp.Substring(idx_begin).Trim()); }
+                    try { tempPara.Data = temp.Substring(idx_begin, length).Trim(); }
+                    catch { tempPara.Data = temp.Substring(idx_begin).Trim(); }
 
                     idx_begin = temp.IndexOf("@") + 1;
                     tempPara.Tips = temp.Substring(idx_begin);
 
+                    idx_begin = temp.IndexOf("(");
+                    idx_end = temp.LastIndexOf(")");
+                    length = idx_end - idx_begin;
+                    try { tempPara.Data_Property = temp.Substring(idx_begin, length); }
+                    catch { }
+
+                    tempPara.Asc_Background = new SolidColorBrush(Colors.White);
                     Parames_Asc.Add(tempPara);
                 }
                 Vis_Save = Visibility.Visible;
+                Last_Ascidx = -1;
             }
             catch { }
+        }
+        private void save_AscNewFiles()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "(*.txt)|*.txt";
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                Save_NewDatas = new List<string>();
+                save_AscNewDatas();
+                string fileNames = openFileDialog.FileName;
+                StreamWriter ascWrite = new StreamWriter(fileNames);
+                foreach (string item in Save_NewDatas)
+                {
+                    ascWrite.WriteLine(item);
+                }
+                ascWrite.Close();
+            }
+        }
+        private void save_AscNewDatas()
+        {
+            for (int i = 0; i < Datas_Asc.Count - 2; i++)
+            {
+                string temp = Parames_Asc[i].Name + " + " + Parames_Asc[i].Data_Property + '<' + Parames_Asc[i].Range + '>'
+                    + Parames_Asc[i].Data + " @" + Parames_Asc[i].Tips;
+                Save_NewDatas.Add(temp);
+            }
+            Save_NewDatas.Add("#ATOEND");
+            Save_NewDatas.Insert(0, "#ATO");
         }
         #endregion
 
@@ -885,9 +938,9 @@ namespace ATOToolDemo.ViewModel
 
         public MainViewModel()  //ViewModel构造函数
         {
-            InitProperties();
+
             InitCommands();
-            string dasdaa = "";
+            InitProperties();
         }
     }
 
