@@ -627,7 +627,7 @@
                         <DataGridTextColumn 
                             Width="auto"
                             MinWidth="70"
-                            Binding="{Binding Name,Mode=TwoWay}"
+                            Binding="{Binding Name,Mode=OneTime}"
                             Header="参数名" 
                             IsReadOnly="True">
                             <DataGridTextColumn.CellStyle>
@@ -646,6 +646,14 @@
                             <DataGridTextColumn.CellStyle>
                                 <Style TargetType="DataGridCell">
                                     <Setter Property="Background" Value="{Binding Asc_Background,Mode=TwoWay}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsDataChanged}" Value="true">
+                                            <Setter Property="Background" Value="Black"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsDataChanged}" Value="false">
+                                            <Setter Property="Background" Value="Green"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>

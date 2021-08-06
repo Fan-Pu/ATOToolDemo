@@ -477,12 +477,25 @@ namespace ATOToolDemo.ViewModel
                     {
                         Vis_Change = Visibility.Visible;
                         parames_Asc[Last_Ascidx].Asc_Background = new SolidColorBrush(Colors.Green);
+                        IsDataChanged = true;
                     }
                 }
                 Last_Ascidx = Curr_Ascpara_idx;
                 Last_AscData = AscData;
+
             }
         }
+        private bool isDataChanged;
+        public bool IsDataChanged
+        {
+            get { return isDataChanged; }
+            set
+            {
+                isDataChanged = value;
+                RaisePropertyChanged();
+            }
+        }
+
 
         private int last_Ascidx;
         public int Last_Ascidx
@@ -683,7 +696,14 @@ namespace ATOToolDemo.ViewModel
 
         private void saveLogFileToExcelCommand()
         {
-            ExcelHelper excel_create = new ExcelHelper("D:\\×ÀÃæ\\¹¤×÷²¾2.xlsx");
+            System.Windows.Forms.OpenFileDialog openFileDialog = new OpenFileDialog();
+            string temp_fileNames = "";
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                openFileDialog.Filter = "(*.xlms)|*.xlms";
+                temp_fileNames = openFileDialog.FileName;
+            }
+            ExcelHelper excel_create = new ExcelHelper(temp_fileNames);
             DataTable data_New = new DataTable();
             for (int i = 0; i <= 7; i++)
             {
