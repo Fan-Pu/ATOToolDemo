@@ -469,8 +469,7 @@ namespace ATOToolDemo.ViewModel
             get { return ascData; }
             set
             {
-                ascData = value;
-                RaisePropertyChanged();
+                ascData = value;              
                 if (Last_Ascidx != -1)
                 {
                     if (Parames_Asc[Last_Ascidx].Data != Last_AscData)
@@ -482,7 +481,7 @@ namespace ATOToolDemo.ViewModel
                 }
                 Last_Ascidx = Curr_Ascpara_idx;
                 Last_AscData = AscData;
-
+                RaisePropertyChanged();
             }
         }
         private bool isDataChanged;

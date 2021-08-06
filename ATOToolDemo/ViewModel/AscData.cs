@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ using System.Windows.Media;
 
 namespace ATOToolDemo.ViewModel
 {
-    public class AscData
+    public class AscData:ViewModelBase
     {
         private string name;
         public string Name
@@ -49,7 +50,8 @@ namespace ATOToolDemo.ViewModel
             get { return asc_Background; }
             set
             {
-                asc_Background = value; 
+                asc_Background = value;
+                RaisePropertyChanged();
             }
         }
 
