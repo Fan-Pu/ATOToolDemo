@@ -87,76 +87,7 @@ namespace ATOToolDemo.ViewModel
         #endregion
 
         #region [日志文件多列车属性]
-        public class LogFile_Mult : ViewModelBase
-        {
-            private string fileName_logMult; //日志文件名
-            public string FileName_logMult
-            {
-                get { return fileName_logMult; }
-                set
-                {
-                    fileName_logMult = value;
-                    RaisePropertyChanged();
-                }
-            }
 
-            private string train_logMult;
-            public string Train_logMult
-            {
-                get { return train_logMult; }
-                set
-                {
-                    train_logMult = value;
-                    RaisePropertyChanged();
-                }
-            }
-
-            private BindingList<ComboBoxItem> interval;
-            public BindingList<ComboBoxItem> Interval
-            {
-                get { return interval; }
-                set
-                {
-                    interval = value;
-                    RaisePropertyChanged();
-
-                }
-            }
-
-            private ObservableCollection<ComboBoxItem> granularity;
-            public ObservableCollection<ComboBoxItem> Granularity
-            {
-                get { return granularity; }
-                set
-                {
-                    granularity = value;
-                    RaisePropertyChanged();
-                }
-            }
-
-            private int gra_idx;
-            public int Gra_idx
-            {
-                get { return gra_idx; }
-                set
-                {
-                    gra_idx = value;
-                    RaisePropertyChanged();
-                }
-            }
-
-            private int interval_idx;
-            public int Interval_idx
-            {
-                get { return interval_idx; }
-                set
-                {
-                    interval_idx = value;
-                    RaisePropertyChanged();
-                }
-            }
-
-        }
         private BindingList<LogFile_Mult> logFileProp_Mult;
         public BindingList<LogFile_Mult> LogFileProp_Mult
         {
@@ -382,6 +313,28 @@ namespace ATOToolDemo.ViewModel
         #endregion
 
         #region [Live chart]
+        
+        //private ObservableCollection<string> labels_X;
+        //public ObservableCollection<string> Labels_X
+        //{
+        //    get { return labels_X; }
+        //    set
+        //    {
+        //        labels_X = value;
+        //        RaisePropertyChanged();
+        //    }
+        //}
+        private BindingList<LiveChartDatas> myCharts;
+
+        public BindingList<LiveChartDatas> MyCharts
+        {
+            get { return myCharts; }
+            set
+            {
+                myCharts = value;
+                RaisePropertyChanged();
+            }
+        }
         private SeriesCollection seriesCollection;
         public SeriesCollection SeriesCollection
         {
@@ -389,27 +342,6 @@ namespace ATOToolDemo.ViewModel
             set
             {
                 seriesCollection = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        private ObservableCollection<string> labels_X;
-        public ObservableCollection<string> Labels_X
-        {
-            get { return labels_X; }
-            set
-            {
-                labels_X = value;
-                RaisePropertyChanged();
-            }
-        }
-        private ObservableCollection<string> labels_Y;
-        public ObservableCollection<string> Labels_Y
-        {
-            get { return labels_Y; }
-            set
-            {
-                labels_Y = value;
                 RaisePropertyChanged();
             }
         }
@@ -469,7 +401,7 @@ namespace ATOToolDemo.ViewModel
             get { return ascData; }
             set
             {
-                ascData = value;              
+                ascData = value;
                 if (Last_Ascidx != -1)
                 {
                     if (Parames_Asc[Last_Ascidx].Data != Last_AscData)
@@ -646,7 +578,7 @@ namespace ATOToolDemo.ViewModel
             FileNames_Sim = new ObservableCollection<string>();
             LogFileProp_Mult = new BindingList<LogFile_Mult>();
             Parames_Asc = new BindingList<AscData>();
-
+            MyCharts = new BindingList<LiveChartDatas>();
 
             DateTime dt = DateTime.Now;
             NowTime = dt.ToLongDateString().ToString();
@@ -828,139 +760,142 @@ namespace ATOToolDemo.ViewModel
         #region [单列车函数]
         private void showSingleTrain()
         {
-            Labels_X = new ObservableCollection<string>
-            {
-
-            };
-            for (int i = 0; i < 50; i = i + 2)
-            {
-                labels_X.Add(i.ToString());
-            }
-            //Labels_Y = new ObservableCollection<string>
+            //Labels_X = new ObservableCollection<string>
             //{
-            //    "200","400","200","400"
+
             //};
-            SeriesCollection = new SeriesCollection
-            {
+            //for (int i = 0; i < 50; i = i + 2)
+            //{
+            //    labels_X.Add(i.ToString());
+            //}
+            LiveChartDatas temp = new LiveChartDatas();
+            temp.SeriesCollection = new SeriesCollection{
                 new LineSeries
                 {
-                    Values = new ChartValues<double> { 300, 500, 700, 400,200,300,500,900,700,500,300, 500, 700, 400,200,300,500,900,700,500 },
+                    Values = new ChartValues<double> { 300, 500, 700, 400,200,300,500,900,700,500,300, 500, 700, 400,200,300,500,900,700,500,300, 500, 700, 400,200,300,500,900,700,500,300, 500, 700, 400,200,300,500,900,700,500 },
                     LineSmoothness = 0,
                     PointGeometry = null,
                     Stroke=System.Windows.Media.Brushes.Red,
                 },
             };
+            
+            
+            
+            MyCharts.Add(temp);
+            
+
+            
         }
 
-        #endregion
+    #endregion
 
         #region[ASC]
-        private void read_AscFiles()
+    private void read_AscFiles()
+    {
+        System.Windows.Forms.OpenFileDialog openfiledialog = new System.Windows.Forms.OpenFileDialog();
+        if (openfiledialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
-            System.Windows.Forms.OpenFileDialog openfiledialog = new System.Windows.Forms.OpenFileDialog();
-            if (openfiledialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                AscFileNames.Add(openfiledialog.FileName);
-                var start_idx = openfiledialog.FileName.LastIndexOf("\\") + 1;
-                AscSimFileNames.Add(openfiledialog.FileName.Substring(start_idx, openfiledialog.FileName.LastIndexOf(".") - start_idx));
-                Curr_Ascpara_idx = -1;
-            }
-
+            AscFileNames.Add(openfiledialog.FileName);
+            var start_idx = openfiledialog.FileName.LastIndexOf("\\") + 1;
+            AscSimFileNames.Add(openfiledialog.FileName.Substring(start_idx, openfiledialog.FileName.LastIndexOf(".") - start_idx));
+            Curr_Ascpara_idx = -1;
         }
-        private void show_AscDatas()
+
+    }
+    private void show_AscDatas()
+    {
+        try
         {
-            try
+            Datas_Asc = new BindingList<string>();
+            using (StreamReader read_Asc = new StreamReader(AscFileNames[Curr_Ascfile_idx], Encoding.Default))
             {
-                Datas_Asc = new BindingList<string>();
-                using (StreamReader read_Asc = new StreamReader(AscFileNames[Curr_Ascfile_idx], Encoding.Default))
+                int lineCount = 0;
+                while (read_Asc.Peek() > 0)
                 {
-                    int lineCount = 0;
-                    while (read_Asc.Peek() > 0)
-                    {
-                        lineCount++;
-                        string temp = read_Asc.ReadLine();
-                        if (!temp.Contains("#"))
-                            Datas_Asc.Add(temp);
-                    }
+                    lineCount++;
+                    string temp = read_Asc.ReadLine();
+                    if (!temp.Contains("#"))
+                        Datas_Asc.Add(temp);
                 }
-                for (int i = 0; i < Datas_Asc.Count; i++)
-                {
-                    int idx_begin;
-                    int idx_end;
-                    int length;
-                    AscData tempPara = new AscData();
-                    string temp = Datas_Asc[i];
-
-                    idx_end = temp.IndexOf("=");
-                    tempPara.Name = temp.Substring(0, idx_end).TrimEnd();
-
-                    idx_begin = temp.IndexOf("<") + 1;
-                    idx_end = temp.IndexOf(">") - 1;
-                    length = idx_end - idx_begin + 1;
-                    try { tempPara.Range = temp.Substring(idx_begin, length); }
-                    catch { tempPara.Range = ""; }
-
-                    idx_begin = temp.IndexOf(">") + 1;
-                    idx_end = temp.IndexOf("@") - 1;
-                    length = idx_end - idx_begin + 1;
-                    try { tempPara.Data = temp.Substring(idx_begin, length).Trim(); }
-                    catch { tempPara.Data = temp.Substring(idx_begin).Trim(); }
-
-                    idx_begin = temp.IndexOf("@") + 1;
-                    tempPara.Tips = temp.Substring(idx_begin);
-
-                    idx_begin = temp.IndexOf("(");
-                    idx_end = temp.LastIndexOf(")");
-                    length = idx_end - idx_begin;
-                    try { tempPara.Data_Property = temp.Substring(idx_begin, length); }
-                    catch { }
-
-                    tempPara.Asc_Background = new SolidColorBrush(Colors.White);
-                    Parames_Asc.Add(tempPara);
-                }
-                Vis_Save = Visibility.Visible;
-                Last_Ascidx = -1;
             }
-            catch { }
-        }
-        private void save_AscNewFiles()
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "(*.txt)|*.txt";
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            for (int i = 0; i < Datas_Asc.Count; i++)
             {
-                Save_NewDatas = new List<string>();
-                save_AscNewDatas();
-                string fileNames = openFileDialog.FileName;
-                StreamWriter ascWrite = new StreamWriter(fileNames);
-                foreach (string item in Save_NewDatas)
-                {
-                    ascWrite.WriteLine(item);
-                }
-                ascWrite.Close();
+                int idx_begin;
+                int idx_end;
+                int length;
+                AscData tempPara = new AscData();
+                string temp = Datas_Asc[i];
+
+                idx_end = temp.IndexOf("=");
+                tempPara.Name = temp.Substring(0, idx_end).TrimEnd();
+
+                idx_begin = temp.IndexOf("<") + 1;
+                idx_end = temp.IndexOf(">") - 1;
+                length = idx_end - idx_begin + 1;
+                try { tempPara.Range = temp.Substring(idx_begin, length); }
+                catch { tempPara.Range = ""; }
+
+                idx_begin = temp.IndexOf(">") + 1;
+                idx_end = temp.IndexOf("@") - 1;
+                length = idx_end - idx_begin + 1;
+                try { tempPara.Data = temp.Substring(idx_begin, length).Trim(); }
+                catch { tempPara.Data = temp.Substring(idx_begin).Trim(); }
+
+                idx_begin = temp.IndexOf("@") + 1;
+                tempPara.Tips = temp.Substring(idx_begin);
+
+                idx_begin = temp.IndexOf("(");
+                idx_end = temp.LastIndexOf(")");
+                length = idx_end - idx_begin;
+                try { tempPara.Data_Property = temp.Substring(idx_begin, length); }
+                catch { }
+
+                tempPara.Asc_Background = default;
+                Parames_Asc.Add(tempPara);
             }
+            Vis_Save = Visibility.Visible;
+            Last_Ascidx = -1;
         }
-        private void save_AscNewDatas()
+        catch { }
+    }
+    private void save_AscNewFiles()
+    {
+        OpenFileDialog openFileDialog = new OpenFileDialog();
+        openFileDialog.Filter = "(*.txt)|*.txt";
+        if (openFileDialog.ShowDialog() == DialogResult.OK)
         {
-            for (int i = 0; i < Datas_Asc.Count - 2; i++)
+            Save_NewDatas = new List<string>();
+            save_AscNewDatas();
+            string fileNames = openFileDialog.FileName;
+            StreamWriter ascWrite = new StreamWriter(fileNames);
+            foreach (string item in Save_NewDatas)
             {
-                string temp = Parames_Asc[i].Name + " + " + Parames_Asc[i].Data_Property + '<' + Parames_Asc[i].Range + '>'
-                    + Parames_Asc[i].Data + " @" + Parames_Asc[i].Tips;
-                Save_NewDatas.Add(temp);
+                ascWrite.WriteLine(item);
             }
-            Save_NewDatas.Add("#ATOEND");
-            Save_NewDatas.Insert(0, "#ATO");
-        }
-        #endregion
-
-        #endregion
-
-        public MainViewModel()  //ViewModel构造函数
-        {
-
-            InitCommands();
-            InitProperties();
+            ascWrite.Close();
         }
     }
+    private void save_AscNewDatas()
+    {
+        for (int i = 0; i < Datas_Asc.Count - 2; i++)
+        {
+            string temp = Parames_Asc[i].Name + " + " + Parames_Asc[i].Data_Property + '<' + Parames_Asc[i].Range + '>'
+                + Parames_Asc[i].Data + " @" + Parames_Asc[i].Tips;
+            Save_NewDatas.Add(temp);
+        }
+        Save_NewDatas.Add("#ATOEND");
+        Save_NewDatas.Insert(0, "#ATO");
+    }
+    #endregion
+
+    #endregion
+
+    public MainViewModel()  //ViewModel构造函数
+    {
+
+        InitCommands();
+        InitProperties();
+    }
+}
 
 }

@@ -25,17 +25,18 @@ namespace ATOToolDemo
         {
             InitializeComponent();
             this.DataContext = new MainViewModel();
-            InitAxis();
+            
         }
         private void InitAxis()
         {
-            hobushAxisX.Separator.IsEnabled = false;
-            hobushAxisX.Separator.Step = 1;
-            hobushAxisX.Title = "Time";
-            hobushAxisX.FontSize = 15;
-            hobushAxisY.Separator.Step = 200;
-            hobushAxisY.Separator.IsEnabled = false;
-            hobushAxisY.Title = "Y";
+
+            //MyAxisX.Separator.IsEnabled = false;
+            //myAxisX.Separator.Step = 2;
+            //myAxisX.Title = "Time";
+            //myAxisY.FontSize = 15;
+            //myAxisY.Separator.Step = 100;
+            //myAxisY.Separator.IsEnabled = false;
+            //myAxisY.Title = "Y";
         }
         private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

@@ -161,16 +161,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AtoUseControlDemo.xaml.cs">
-      <DependentUpon>AtoUseControlDemo.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ViewModel\AscData.cs" />
     <Compile Include="ViewModel\ExcelHelper.cs" />
+    <Compile Include="ViewModel\LiveChartDatas.cs" />
+    <Compile Include="ViewModel\LogFile_Mult.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
-    <Page Include="AtoUseControlDemo.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
