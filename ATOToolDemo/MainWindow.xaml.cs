@@ -27,17 +27,6 @@ namespace ATOToolDemo
             this.DataContext = new MainViewModel();
             
         }
-        private void InitAxis()
-        {
-
-            //MyAxisX.Separator.IsEnabled = false;
-            //myAxisX.Separator.Step = 2;
-            //myAxisX.Title = "Time";
-            //myAxisY.FontSize = 15;
-            //myAxisY.Separator.Step = 100;
-            //myAxisY.Separator.IsEnabled = false;
-            //myAxisY.Title = "Y";
-        }
         private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 

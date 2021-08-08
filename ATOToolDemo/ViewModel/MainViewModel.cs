@@ -313,19 +313,7 @@ namespace ATOToolDemo.ViewModel
         #endregion
 
         #region [Live chart]
-        
-        //private ObservableCollection<string> labels_X;
-        //public ObservableCollection<string> Labels_X
-        //{
-        //    get { return labels_X; }
-        //    set
-        //    {
-        //        labels_X = value;
-        //        RaisePropertyChanged();
-        //    }
-        //}
         private BindingList<LiveChartDatas> myCharts;
-
         public BindingList<LiveChartDatas> MyCharts
         {
             get { return myCharts; }
@@ -335,18 +323,6 @@ namespace ATOToolDemo.ViewModel
                 RaisePropertyChanged();
             }
         }
-        private SeriesCollection seriesCollection;
-        public SeriesCollection SeriesCollection
-        {
-            get { return seriesCollection; }
-            set
-            {
-                seriesCollection = value;
-                RaisePropertyChanged();
-            }
-        }
-
-
         #endregion
 
         #region [ASC]
@@ -408,7 +384,6 @@ namespace ATOToolDemo.ViewModel
                     {
                         Vis_Change = Visibility.Visible;
                         parames_Asc[Last_Ascidx].Asc_Background = new SolidColorBrush(Colors.Green);
-                        IsDataChanged = true;
                     }
                 }
                 Last_Ascidx = Curr_Ascpara_idx;
@@ -416,17 +391,6 @@ namespace ATOToolDemo.ViewModel
                 RaisePropertyChanged();
             }
         }
-        private bool isDataChanged;
-        public bool IsDataChanged
-        {
-            get { return isDataChanged; }
-            set
-            {
-                isDataChanged = value;
-                RaisePropertyChanged();
-            }
-        }
-
 
         private int last_Ascidx;
         public int Last_Ascidx
@@ -478,7 +442,7 @@ namespace ATOToolDemo.ViewModel
 
         #endregion
 
-
+        #region [杂项]
         private string nowTime;
         public string NowTime
         {
@@ -512,7 +476,7 @@ namespace ATOToolDemo.ViewModel
             }
         }
 
-
+        #endregion
 
         #endregion
 
@@ -579,6 +543,7 @@ namespace ATOToolDemo.ViewModel
             LogFileProp_Mult = new BindingList<LogFile_Mult>();
             Parames_Asc = new BindingList<AscData>();
             MyCharts = new BindingList<LiveChartDatas>();
+            
 
             DateTime dt = DateTime.Now;
             NowTime = dt.ToLongDateString().ToString();
@@ -607,7 +572,6 @@ namespace ATOToolDemo.ViewModel
             DeleteMultTrain = new RelayCommand(deleteMultTrain);
             MoveUp = new RelayCommand(moveUp);
             MoveDown = new RelayCommand(moveDown);
-            UpdataMultTrain = new RelayCommand(updataMultTrain);
             Read_AscFiles = new RelayCommand(read_AscFiles);
             Show_AscDatas = new RelayCommand(show_AscDatas);
             Save_AscNewFiles = new RelayCommand(save_AscNewFiles);
@@ -703,7 +667,18 @@ namespace ATOToolDemo.ViewModel
         } //多列车
         private void showMultTrain()
         {
-            ;
+            LiveChartDatas temp_Chart = new LiveChartDatas();
+            temp_Chart.SeriesCollection = new SeriesCollection{
+                new LineSeries
+                {
+                    Values = new ChartValues<double> { 300, 500, 700, 400,200,300,500,900,700,500,300, 500, 700, 400,200,300,500,900,700,500,300, 500, 700, 400,200,300,500,900,700,500,300, 500, 700, 400,200,300,500,900,700,500 },
+                    LineSmoothness = 0,
+                    PointGeometry = null,
+                    Stroke=Brushes.Red,
+                },
+            };
+            temp_Chart.Height_MyChart = 70;
+            MyCharts.Add(temp_Chart);
         }
         private void deleteMultTrain()
         {
@@ -751,151 +726,135 @@ namespace ATOToolDemo.ViewModel
 
             }
         }
-        private void updataMultTrain()
-        {
-            ;
-        }
+        
         #endregion
 
         #region [单列车函数]
         private void showSingleTrain()
         {
-            //Labels_X = new ObservableCollection<string>
-            //{
-
-            //};
-            //for (int i = 0; i < 50; i = i + 2)
-            //{
-            //    labels_X.Add(i.ToString());
-            //}
-            LiveChartDatas temp = new LiveChartDatas();
-            temp.SeriesCollection = new SeriesCollection{
+            LiveChartDatas temp_Chart = new LiveChartDatas();
+            temp_Chart.SeriesCollection = new SeriesCollection{
                 new LineSeries
                 {
                     Values = new ChartValues<double> { 300, 500, 700, 400,200,300,500,900,700,500,300, 500, 700, 400,200,300,500,900,700,500,300, 500, 700, 400,200,300,500,900,700,500,300, 500, 700, 400,200,300,500,900,700,500 },
                     LineSmoothness = 0,
                     PointGeometry = null,
-                    Stroke=System.Windows.Media.Brushes.Red,
+                    Stroke=Brushes.Red,
                 },
             };
-            
-            
-            
-            MyCharts.Add(temp);
-            
-
-            
+            temp_Chart.Height_MyChart = 400;
+            MyCharts.Clear();
+            MyCharts.Add(temp_Chart);
         }
-
-    #endregion
+        #endregion
 
         #region[ASC]
-    private void read_AscFiles()
-    {
-        System.Windows.Forms.OpenFileDialog openfiledialog = new System.Windows.Forms.OpenFileDialog();
-        if (openfiledialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        private void read_AscFiles()
         {
-            AscFileNames.Add(openfiledialog.FileName);
-            var start_idx = openfiledialog.FileName.LastIndexOf("\\") + 1;
-            AscSimFileNames.Add(openfiledialog.FileName.Substring(start_idx, openfiledialog.FileName.LastIndexOf(".") - start_idx));
-            Curr_Ascpara_idx = -1;
-        }
-
-    }
-    private void show_AscDatas()
-    {
-        try
-        {
-            Datas_Asc = new BindingList<string>();
-            using (StreamReader read_Asc = new StreamReader(AscFileNames[Curr_Ascfile_idx], Encoding.Default))
+            System.Windows.Forms.OpenFileDialog openfiledialog = new System.Windows.Forms.OpenFileDialog();
+            if (openfiledialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                int lineCount = 0;
-                while (read_Asc.Peek() > 0)
+                AscFileNames.Add(openfiledialog.FileName);
+                var start_idx = openfiledialog.FileName.LastIndexOf("\\") + 1;
+                AscSimFileNames.Add(openfiledialog.FileName.Substring(start_idx, openfiledialog.FileName.LastIndexOf(".") - start_idx));
+                Curr_Ascpara_idx = -1;
+            }
+
+        }
+        private void show_AscDatas()
+        {
+            try
+            {
+                Datas_Asc = new BindingList<string>();
+                using (StreamReader read_Asc = new StreamReader(AscFileNames[Curr_Ascfile_idx], Encoding.Default))
                 {
-                    lineCount++;
-                    string temp = read_Asc.ReadLine();
-                    if (!temp.Contains("#"))
-                        Datas_Asc.Add(temp);
+                    int lineCount = 0;
+                    while (read_Asc.Peek() > 0)
+                    {
+                        lineCount++;
+                        string temp = read_Asc.ReadLine();
+                        if (!temp.Contains("#"))
+                            Datas_Asc.Add(temp);
+                    }
                 }
+                for (int i = 0; i < Datas_Asc.Count; i++)
+                {
+                    int idx_begin;
+                    int idx_end;
+                    int length;
+                    AscData tempPara = new AscData();
+                    string temp = Datas_Asc[i];
+
+                    idx_end = temp.IndexOf("=");
+                    tempPara.Name = temp.Substring(0, idx_end).TrimEnd();
+
+                    idx_begin = temp.IndexOf("<") + 1;
+                    idx_end = temp.IndexOf(">") - 1;
+                    length = idx_end - idx_begin + 1;
+                    try { tempPara.Range = temp.Substring(idx_begin, length); }
+                    catch { tempPara.Range = ""; }
+
+                    idx_begin = temp.IndexOf(">") + 1;
+                    idx_end = temp.IndexOf("@") - 1;
+                    length = idx_end - idx_begin + 1;
+                    try { tempPara.Data = temp.Substring(idx_begin, length).Trim(); }
+                    catch { tempPara.Data = temp.Substring(idx_begin).Trim(); }
+
+                    idx_begin = temp.IndexOf("@") + 1;
+                    tempPara.Tips = temp.Substring(idx_begin);
+
+                    idx_begin = temp.IndexOf("(");
+                    idx_end = temp.LastIndexOf(")");
+                    length = idx_end - idx_begin;
+                    try { tempPara.Data_Property = temp.Substring(idx_begin, length); }
+                    catch { }
+
+                    tempPara.Asc_Background = default;
+                    Parames_Asc.Add(tempPara);
+                }
+                Vis_Save = Visibility.Visible;
+                Last_Ascidx = -1;
             }
-            for (int i = 0; i < Datas_Asc.Count; i++)
-            {
-                int idx_begin;
-                int idx_end;
-                int length;
-                AscData tempPara = new AscData();
-                string temp = Datas_Asc[i];
-
-                idx_end = temp.IndexOf("=");
-                tempPara.Name = temp.Substring(0, idx_end).TrimEnd();
-
-                idx_begin = temp.IndexOf("<") + 1;
-                idx_end = temp.IndexOf(">") - 1;
-                length = idx_end - idx_begin + 1;
-                try { tempPara.Range = temp.Substring(idx_begin, length); }
-                catch { tempPara.Range = ""; }
-
-                idx_begin = temp.IndexOf(">") + 1;
-                idx_end = temp.IndexOf("@") - 1;
-                length = idx_end - idx_begin + 1;
-                try { tempPara.Data = temp.Substring(idx_begin, length).Trim(); }
-                catch { tempPara.Data = temp.Substring(idx_begin).Trim(); }
-
-                idx_begin = temp.IndexOf("@") + 1;
-                tempPara.Tips = temp.Substring(idx_begin);
-
-                idx_begin = temp.IndexOf("(");
-                idx_end = temp.LastIndexOf(")");
-                length = idx_end - idx_begin;
-                try { tempPara.Data_Property = temp.Substring(idx_begin, length); }
-                catch { }
-
-                tempPara.Asc_Background = default;
-                Parames_Asc.Add(tempPara);
-            }
-            Vis_Save = Visibility.Visible;
-            Last_Ascidx = -1;
+            catch { }
         }
-        catch { }
-    }
-    private void save_AscNewFiles()
-    {
-        OpenFileDialog openFileDialog = new OpenFileDialog();
-        openFileDialog.Filter = "(*.txt)|*.txt";
-        if (openFileDialog.ShowDialog() == DialogResult.OK)
+        private void save_AscNewFiles()
         {
-            Save_NewDatas = new List<string>();
-            save_AscNewDatas();
-            string fileNames = openFileDialog.FileName;
-            StreamWriter ascWrite = new StreamWriter(fileNames);
-            foreach (string item in Save_NewDatas)
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "(*.txt)|*.txt";
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                ascWrite.WriteLine(item);
+                Save_NewDatas = new List<string>();
+                save_AscNewDatas();
+                string fileNames = openFileDialog.FileName;
+                StreamWriter ascWrite = new StreamWriter(fileNames);
+                foreach (string item in Save_NewDatas)
+                {
+                    ascWrite.WriteLine(item);
+                }
+                ascWrite.Close();
             }
-            ascWrite.Close();
         }
-    }
-    private void save_AscNewDatas()
-    {
-        for (int i = 0; i < Datas_Asc.Count - 2; i++)
+        private void save_AscNewDatas()
         {
-            string temp = Parames_Asc[i].Name + " + " + Parames_Asc[i].Data_Property + '<' + Parames_Asc[i].Range + '>'
-                + Parames_Asc[i].Data + " @" + Parames_Asc[i].Tips;
-            Save_NewDatas.Add(temp);
+            for (int i = 0; i < Datas_Asc.Count - 2; i++)
+            {
+                string temp = Parames_Asc[i].Name + " + " + Parames_Asc[i].Data_Property + '<' + Parames_Asc[i].Range + '>'
+                    + Parames_Asc[i].Data + " @" + Parames_Asc[i].Tips;
+                Save_NewDatas.Add(temp);
+            }
+            Save_NewDatas.Add("#ATOEND");
+            Save_NewDatas.Insert(0, "#ATO");
         }
-        Save_NewDatas.Add("#ATOEND");
-        Save_NewDatas.Insert(0, "#ATO");
+        #endregion
+
+        #endregion
+
+        public MainViewModel()  //ViewModel构造函数
+        {
+
+            InitCommands();
+            InitProperties();
+        }
     }
-    #endregion
-
-    #endregion
-
-    public MainViewModel()  //ViewModel构造函数
-    {
-
-        InitCommands();
-        InitProperties();
-    }
-}
 
 }
