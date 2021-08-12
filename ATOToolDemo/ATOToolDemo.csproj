@@ -161,10 +161,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ViewModel\AscData.cs" />
-    <Compile Include="ViewModel\ExcelHelper.cs" />
-    <Compile Include="ViewModel\LiveChartDatas.cs" />
-    <Compile Include="ViewModel\LogFile_Mult.cs" />
+    <Compile Include="Model\AscData.cs" />
+    <Compile Include="Model\ExcelHelper.cs" />
+    <Compile Include="Model\LiveChartDatas.cs" />
+    <Compile Include="Model\LogFile_Mult.cs" />
+    <Compile Include="Model\ChartParameter.cs" />
+    <Compile Include="Model\ChartTypes.cs" />
+    <Compile Include="Model\MeasureModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -355,31 +355,57 @@
                                             Content="显示" 
                                             Command="{Binding ShowMultTrain}"
                                             />
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal">
                                         <Button
-                                            Margin="0,0,5,0"
-                                            Padding="10,2"
+                                            MinWidth="50"
+                                            Margin="5"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Center"
                                             Command="{Binding AddLogFile}"
                                             Content="添加" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        
                                         <Button
-                                            Margin="5,0"
+                                            Margin="5,10"
+                                            Height="20"
                                             Padding="10,2"
                                             Content="删除"
                                             Command="{Binding DeleteMultTrain}"
                                             />
                                         <Button
-                                            Margin="5,0"
+                                            Margin="5,10"
+                                            Height="20"
                                             Padding="10,2"
                                             Content="上移" 
                                             Command="{Binding MoveUp}"
                                             />
                                         <Button
-                                            Margin="5,0"
+                                            Margin="5,10"
+                                            Height="20"
                                             Padding="10,2"
                                             Content="下移"
                                             Command="{Binding MoveDown}"
                                             />
+                                        <StackPanel>
+                                            <GroupBox
+                                            BorderBrush="Gray"
+                                            BorderThickness="1"
+                                            Header="图像类型选择">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <xctk:WatermarkComboBox 
+                                                        Watermark="S-V-T" 
+                                                        Margin="5,0" 
+                                                        Width="60"
+                                                        Height="20"
+                                                        ItemsSource="{Binding MyChartTypes.SVT}" 
+                                                        SelectedIndex="{Binding MyChartTypes.SVT_Index}"
+                                                        />
+                                                     
+                                                    <RadioButton GroupName="Second_Multy" Content="Statues" Margin="5,5" Command="{Binding ChangeStatus}" IsChecked="{Binding MyChartTypes.IsStatusChanged}"/>
+                                                    <RadioButton GroupName="Third_Multy" Content="ACC" Margin="5,5" Command="{Binding ChangeAcc}" IsChecked="{Binding MyChartTypes.IsAccChanged}"/>
+                                                </StackPanel>
+                                            </GroupBox>
+                                        </StackPanel>
                                         
                                     </StackPanel>
                                     <ScrollViewer Margin="0,5">
@@ -409,7 +435,7 @@
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <ComboBox ItemsSource="{Binding Interval}" 
-                                                                      SelectedIndex="{Binding Interval_idx}" />
+                                                                      SelectedIndex="{Binding Interval_idx}"/>
                                                         </DataTemplate>
                                                     </DataGridTemplateColumn.CellTemplate>
                                                 </DataGridTemplateColumn>
@@ -539,16 +565,19 @@
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <Grid>
-                                        <lvc:CartesianChart Width="600" Height="{Binding Height_MyChart}" Series="{Binding SeriesCollection}" >
+                                        <lvc:CartesianChart Width="{Binding Width_MyChart}"  Height="{Binding Height_MyChart}"
+                                                            Series="{Binding SeriesCollection}" DisableAnimations="True"
+                                                            ScrollBarFill="Transparent" LegendLocation="Left"
+                                                            >
                                             <lvc:CartesianChart.AxisX>
-                                                <lvc:Axis Labels="{Binding Labels_X}" Title="Time">
+                                                <lvc:Axis Labels="{Binding Labels_X}" Title="{Binding Title_X}" >
                                                     <lvc:Axis.Separator>
-                                                        <lvc:Separator Step="1" />
+                                                        <lvc:Separator Step="{Binding Step_MyChart}"/>
                                                     </lvc:Axis.Separator>
                                                 </lvc:Axis>
                                             </lvc:CartesianChart.AxisX>
                                             <lvc:CartesianChart.AxisY>
-                                                <lvc:Axis MaxValue="1000" MinValue="0" />
+                                                <lvc:Axis MaxValue="{Binding MaxValue_MyChart}" MinValue="{Binding MinValue_MyChart}" Title="{Binding Title_Y}"/>
                                             </lvc:CartesianChart.AxisY>
                                         </lvc:CartesianChart>
                                     </Grid>

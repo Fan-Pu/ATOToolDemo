@@ -23,8 +23,7 @@ namespace ATOToolDemo.ViewModel
         public string Data
         {
             get { return data; }
-            set { data = value;
-                
+            set { data = value;    
             }
         }
 
