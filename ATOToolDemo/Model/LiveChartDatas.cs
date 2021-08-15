@@ -103,6 +103,7 @@ namespace ATOToolDemo.ViewModel
                 RaisePropertyChanged();
             }
         }
+        
 
 
     }

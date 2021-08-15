@@ -41,7 +41,6 @@ namespace ATOToolDemo.ViewModel
         }
 
         private int curr_trainSingle_idx;
-
         public int Curr_trainSingle_idx
         {
             get { return curr_trainSingle_idx; }
@@ -83,9 +82,103 @@ namespace ATOToolDemo.ViewModel
                     };
                     TrainNameList_LogSingle.Add(item);
                 }
+                #region 临时变量初始化
+                ChartParameter paraTmep = new ChartParameter();
+                paraTmep.Time = new BindingList<double>();
+                paraTmep.Speed = new BindingList<double>();
+                paraTmep.Status = new BindingList<double>();
+                paraTmep.TargetAcc = new BindingList<double>();
+                paraTmep.TargetSpeed = new BindingList<double>();
+                paraTmep.TrainPosition = new BindingList<double>();
+                paraTmep.TrainAcc = new BindingList<double>();
+                paraTmep.DeltaAcc = new BindingList<double>();
+                Double temp = 0;
+                #endregion
+                for (int i = 1; i < Data_Single.Rows.Count; i++)
+                {
+                    if (Data_Single.Rows[i][15].ToString() != "Error" &&
+                        (paraTmep.TrainPosition.Count - 1 < 0 || Double.Parse(Data_Single.Rows[i][9].ToString()) + temp != paraTmep.TrainPosition[paraTmep.TrainPosition.Count - 1]) && Double.Parse(Data_Single.Rows[i][9].ToString()) != 0)
+                    {
+                        if (paraTmep.TrainPosition.Count - 1 < 0)
+                        {
+                            paraTmep.Time.Add(((i - 1) * 0.25));
+                            paraTmep.Speed.Add(Double.Parse(Data_Single.Rows[i][2].ToString()));
+                            paraTmep.TargetSpeed.Add(Double.Parse(Data_Single.Rows[i][3].ToString()));
+                            paraTmep.TargetAcc.Add(Double.Parse(Data_Single.Rows[i][6].ToString()));
+                            paraTmep.TrainAcc.Add(Double.Parse(Data_Single.Rows[i][6].ToString()));
+                            paraTmep.DeltaAcc.Add(Double.Parse(Data_Single.Rows[i][7].ToString()));
+                            paraTmep.TrainPosition.Add(Double.Parse(Data_Single.Rows[i][9].ToString()) + temp);
+                            if (Data_Single.Rows[i][15].ToString() == "Traction")
+                                paraTmep.Status.Add(2.0);
+                            else if (Data_Single.Rows[i][15].ToString() == "Coast")
+                                paraTmep.Status.Add(1.0);
+                            else if (Data_Single.Rows[i][15].ToString() == "Brake")
+                                paraTmep.Status.Add(0.0);
+                            continue;
+                        }
+                        else if (paraTmep.TrainPosition[paraTmep.TrainPosition.Count - 1] - Double.Parse(Data_Single.Rows[i][9].ToString()) - temp < 0.1 &&
+                            paraTmep.TrainPosition[paraTmep.TrainPosition.Count - 1] - Double.Parse(Data_Single.Rows[i][9].ToString()) - temp > 0)
+                            continue;
+                        paraTmep.Time.Add(((i - 1) * 0.25));
+                        paraTmep.Speed.Add(Double.Parse(Data_Single.Rows[i][2].ToString()));
+                        paraTmep.TargetSpeed.Add(Double.Parse(Data_Single.Rows[i][3].ToString()));
+                        if (Double.Parse(Data_Single.Rows[i][6].ToString()) - paraTmep.TargetAcc[paraTmep.TrainAcc.Count - 1] > 10 || Double.Parse(Data_Single.Rows[i][6].ToString()) - paraTmep.TrainAcc[paraTmep.TrainAcc.Count - 1] < -10)
+                            paraTmep.TrainAcc.Add(paraTmep.TrainAcc[paraTmep.TrainAcc.Count - 1]);
+                        else
+                            paraTmep.TrainAcc.Add(Double.Parse(Data_Single.Rows[i][6].ToString()));
+                        if (Double.Parse(Data_Single.Rows[i][5].ToString()) - paraTmep.TargetAcc[paraTmep.TargetAcc.Count - 1] > 10 || Double.Parse(Data_Single.Rows[i][5].ToString()) - paraTmep.TargetAcc[paraTmep.TargetAcc.Count - 1] < -10)
+                            paraTmep.TargetAcc.Add(paraTmep.TargetAcc[paraTmep.TargetAcc.Count - 1]);
+                        else
+                            paraTmep.TargetAcc.Add(Double.Parse(Data_Single.Rows[i][5].ToString()));
+                        if (Double.Parse(Data_Single.Rows[i][7].ToString()) > 1000 || Double.Parse(Data_Single.Rows[i][7].ToString()) < -1000)
+                            paraTmep.DeltaAcc.Add(1.0);
+                        else
+                            if (Double.Parse(Data_Single.Rows[i][7].ToString()) - paraTmep.DeltaAcc[paraTmep.DeltaAcc.Count - 1] > 10 || Double.Parse(Data_Single.Rows[i][7].ToString()) - paraTmep.DeltaAcc[paraTmep.DeltaAcc.Count - 1] < -10)
+                            paraTmep.DeltaAcc.Add(paraTmep.DeltaAcc[paraTmep.DeltaAcc.Count - 1]);
+                        else
+                            paraTmep.DeltaAcc.Add(Double.Parse(Data_Single.Rows[i][7].ToString()));
+                        if (paraTmep.TrainPosition.Count == 0)
+                            paraTmep.TrainPosition.Add(Double.Parse(Data_Single.Rows[i][9].ToString()) + temp);
+                        else
+                        {
+                            if (Double.Parse(Data_Single.Rows[i][9].ToString()) + temp > paraTmep.TrainPosition[paraTmep.TrainPosition.Count - 1])
+                                paraTmep.TrainPosition.Add(Double.Parse(Data_Single.Rows[i][9].ToString()) + temp);
+                            else
+                            {
+                                temp = paraTmep.TrainPosition[paraTmep.TrainPosition.Count - 1];
+                                paraTmep.TrainPosition.Add(Double.Parse(Data_Single.Rows[i][9].ToString()) + temp);
+                            }
+                        }
+                        if (Data_Single.Rows[i][15].ToString() == "Traction")
+                            paraTmep.Status.Add(2.0);
+                        else if (Data_Single.Rows[i][15].ToString() == "Coast")
+                            paraTmep.Status.Add(1.0);
+                        else if (Data_Single.Rows[i][15].ToString() == "Brake")
+                            paraTmep.Status.Add(0.0);
+                        else
+                            paraTmep.Status.Add(-1.0);
+                    }
+                }
+                for (int i = 1; i < paraTmep.TrainPosition.Count; i++)
+                {
+                    if (paraTmep.TrainPosition[i] <= paraTmep.TrainPosition[i - 1])
+                    {
+                        ;
+                    }
+                }
+                MySinChartParameters = paraTmep;
             }
         }
-
+        private ChartParameter mySinChartParameters;
+        public ChartParameter MySinChartParameters
+        {
+            get { return mySinChartParameters; }
+            set
+            {
+                mySinChartParameters = value;
+                RaisePropertyChanged();
+            }
+        }
         #endregion
 
         #region [日志文件多列车属性]
@@ -115,7 +208,7 @@ namespace ATOToolDemo.ViewModel
                 RaisePropertyChanged();
                 if (Curr_fileMult_idx >= 0)
                     Filename_logMult = FileNames[Curr_fileMult_idx];
-            }
+            }    
         }
 
         private int curr_trainMult_idx;
@@ -174,23 +267,58 @@ namespace ATOToolDemo.ViewModel
                 #endregion
                 for (int i = 1; i < Data_Mult.Rows.Count; i++)
                 {
-                    if (!paraTmep.TrainPosition.Contains(Double.Parse(Data_Mult.Rows[i][9].ToString())+temp) && Data_Mult.Rows[i][15].ToString() != "Error")
+                    if (Data_Mult.Rows[i][15].ToString() != "Error" &&
+                        (paraTmep.TrainPosition.Count - 1 < 0 || Double.Parse(Data_Mult.Rows[i][9].ToString())+temp != paraTmep.TrainPosition[paraTmep.TrainPosition.Count - 1])&& Double.Parse(Data_Mult.Rows[i][9].ToString()) != 0)
                     {
+                        if (paraTmep.TrainPosition.Count - 1 < 0)
+                        {
+                            paraTmep.Time.Add(((i - 1) * 0.25));
+                            paraTmep.Speed.Add(Double.Parse(Data_Mult.Rows[i][2].ToString()));
+                            paraTmep.TargetSpeed.Add(Double.Parse(Data_Mult.Rows[i][3].ToString()));
+                            paraTmep.TargetAcc.Add(Double.Parse(Data_Mult.Rows[i][6].ToString()));
+                            paraTmep.TrainAcc.Add(Double.Parse(Data_Mult.Rows[i][6].ToString()));
+                            paraTmep.DeltaAcc.Add(Double.Parse(Data_Mult.Rows[i][7].ToString()));
+                            paraTmep.TrainPosition.Add(Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp);
+                            if (Data_Mult.Rows[i][15].ToString() == "Traction")
+                                paraTmep.Status.Add(2.0);
+                            else if (Data_Mult.Rows[i][15].ToString() == "Coast")
+                                paraTmep.Status.Add(1.0);
+                            else if (Data_Mult.Rows[i][15].ToString() == "Brake")
+                                paraTmep.Status.Add(0.0);
+                            continue;
+                        }
+                        else if (paraTmep.TrainPosition[paraTmep.TrainPosition.Count - 1] - Double.Parse(Data_Mult.Rows[i][9].ToString())-temp < 0.1 &&
+                            paraTmep.TrainPosition[paraTmep.TrainPosition.Count - 1] - Double.Parse(Data_Mult.Rows[i][9].ToString())-temp > 0)
+                            continue;
                         paraTmep.Time.Add(((i - 1) * 0.25));
                         paraTmep.Speed.Add(Double.Parse(Data_Mult.Rows[i][2].ToString()));
                         paraTmep.TargetSpeed.Add(Double.Parse(Data_Mult.Rows[i][3].ToString()));
-                        paraTmep.TrainAcc.Add(Double.Parse(Data_Mult.Rows[i][6].ToString()));
-                        paraTmep.TargetAcc.Add(Double.Parse(Data_Mult.Rows[i][5].ToString()));
-                        if (Double.Parse(Data_Mult.Rows[i][7].ToString()) > 1000)
-                            paraTmep.DeltaAcc.Add(0);
+                        if (Double.Parse(Data_Mult.Rows[i][6].ToString()) - paraTmep.TargetAcc[paraTmep.TrainAcc.Count - 1] > 10 || Double.Parse(Data_Mult.Rows[i][6].ToString()) - paraTmep.TrainAcc[paraTmep.TrainAcc.Count - 1] < -10)
+                            paraTmep.TrainAcc.Add(paraTmep.TrainAcc[paraTmep.TrainAcc.Count - 1]);
                         else
-                            paraTmep.DeltaAcc.Add(Double.Parse(Data_Mult.Rows[i][7].ToString()));
-                        if (Double.Parse(Data_Mult.Rows[i][9].ToString()) >= Double.Parse(Data_Mult.Rows[i - 1][9].ToString()))
+                            paraTmep.TrainAcc.Add(Double.Parse(Data_Mult.Rows[i][6].ToString()));
+                        if (Double.Parse(Data_Mult.Rows[i][5].ToString()) - paraTmep.TargetAcc[paraTmep.TargetAcc.Count - 1] > 10 || Double.Parse(Data_Mult.Rows[i][5].ToString()) - paraTmep.TargetAcc[paraTmep.TargetAcc.Count - 1] < -10)
+                            paraTmep.TargetAcc.Add(paraTmep.TargetAcc[paraTmep.TargetAcc.Count - 1]);
+                        else   
+                            paraTmep.TargetAcc.Add(Double.Parse(Data_Mult.Rows[i][5].ToString()));
+                        if (Double.Parse(Data_Mult.Rows[i][7].ToString()) > 1000 || Double.Parse(Data_Mult.Rows[i][7].ToString()) < -1000)
+                            paraTmep.DeltaAcc.Add(1.0);
+                        else
+                            if (Double.Parse(Data_Mult.Rows[i][7].ToString()) - paraTmep.DeltaAcc[paraTmep.DeltaAcc.Count - 1] > 10 || Double.Parse(Data_Mult.Rows[i][7].ToString()) - paraTmep.DeltaAcc[paraTmep.DeltaAcc.Count - 1] < -10)
+                                paraTmep.DeltaAcc.Add(paraTmep.DeltaAcc[paraTmep.DeltaAcc.Count - 1]);
+                            else
+                                paraTmep.DeltaAcc.Add(Double.Parse(Data_Mult.Rows[i][7].ToString()));
+                        if (paraTmep.TrainPosition.Count == 0)
                             paraTmep.TrainPosition.Add(Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp);
                         else
                         {
-                            temp += Double.Parse(Data_Mult.Rows[i - 1][9].ToString());
-                            paraTmep.TrainPosition.Add(Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp);
+                            if (Double.Parse(Data_Mult.Rows[i][9].ToString())+temp > paraTmep.TrainPosition[paraTmep.TrainPosition.Count - 1])
+                                paraTmep.TrainPosition.Add(Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp);
+                            else
+                            {
+                                temp = paraTmep.TrainPosition[paraTmep.TrainPosition.Count - 1];
+                                paraTmep.TrainPosition.Add(Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp);
+                            }
                         }
                         if (Data_Mult.Rows[i][15].ToString() == "Traction")
                             paraTmep.Status.Add(2.0);
@@ -200,7 +328,13 @@ namespace ATOToolDemo.ViewModel
                             paraTmep.Status.Add(0.0);
                         else
                             paraTmep.Status.Add(-1.0);
-
+                    }
+                }
+                for (int i = 1; i < paraTmep.TrainPosition.Count; i++)
+                {
+                    if(paraTmep.TrainPosition[i] <= paraTmep.TrainPosition[i-1])
+                    {
+                        ; 
                     }
                 }
                 MyMultyChartParameters.Add(paraTmep);
@@ -228,6 +362,7 @@ namespace ATOToolDemo.ViewModel
                 RaisePropertyChanged();
             }
         }
+
 
 
         #endregion
@@ -758,8 +893,10 @@ namespace ATOToolDemo.ViewModel
                 double max = 0;
                 if (MyChartTypes.SVT_Index == 2)
                 {
+                    double max_time = 0;
                     for (int i = 0; i < MyMultyChartParameters[Curr_fileMult_idx].Speed.Count; i++)
                     {
+
                         valuesTemp.Add(new MeasureModel
                         {
                             X = MyMultyChartParameters[Curr_fileMult_idx].Time[i],
@@ -769,14 +906,20 @@ namespace ATOToolDemo.ViewModel
                         {
                             max = MyMultyChartParameters[Curr_fileMult_idx].Speed[i];
                         }
+                        if (MyMultyChartParameters[Curr_fileMult_idx].Time[i] > max_time)
+                        {
+                            max_time = MyMultyChartParameters[Curr_fileMult_idx].Time[i];
+                        }
                     }
                     temp_Chart.Title_X = "Time"; temp_Chart.Title_Y = "TrainSpeed";
-                    temp_Chart.Width_MyChart = MyMultyChartParameters[Curr_fileMult_idx].Speed.Count * 10;
+                    temp_Chart.Width_MyChart = max_time * 10;
                     titleTemp = "V-T图";
-                    temp_Chart.MaxValue_MyChart = max + 5;
+                    temp_Chart.MaxValue_MyChart = max + 20;
+                    temp_Chart.Step_MyChart = 5;
                 }
                 else if (MyChartTypes.SVT_Index == 1)
                 {
+                    double max_time = 0;
                     for (int i = 0; i < MyMultyChartParameters[Curr_fileMult_idx].TrainPosition.Count; i++)
                     {
                         valuesTemp.Add(new MeasureModel
@@ -788,14 +931,20 @@ namespace ATOToolDemo.ViewModel
                         {
                             max = MyMultyChartParameters[Curr_fileMult_idx].TrainPosition[i];
                         }
+                        if (MyMultyChartParameters[Curr_fileMult_idx].Time[i] > max_time)
+                        {
+                            max_time = MyMultyChartParameters[Curr_fileMult_idx].Time[i];
+                        }
                     }
                     temp_Chart.Title_X = "Time"; temp_Chart.Title_Y = "TrainPosition";
-                    temp_Chart.Width_MyChart = MyMultyChartParameters[Curr_fileMult_idx].TrainPosition.Count * 10;
+                    temp_Chart.Width_MyChart = max_time * 10;
                     titleTemp = "S-T图";
                     temp_Chart.MaxValue_MyChart = max + 200;
+                    temp_Chart.Step_MyChart = 5;
                 }
                 else if (MyChartTypes.SVT_Index == 0)
                 {
+                    double max_position = 0;
                     for (int i = 0; i < MyMultyChartParameters[Curr_fileMult_idx].TrainPosition.Count; i++)
                     {
                         valuesTemp.Add(new MeasureModel
@@ -807,12 +956,19 @@ namespace ATOToolDemo.ViewModel
                         {
                             max = MyMultyChartParameters[Curr_fileMult_idx].Speed[i];
                         }
+                        if (MyMultyChartParameters[Curr_fileMult_idx].TrainPosition[i] > max_position)
+                        {
+                            max_position = MyMultyChartParameters[Curr_fileMult_idx].TrainPosition[i];
+                        }
                     }
-                    temp_Chart.Title_Y = "TrainSpeed";temp_Chart.Title_X = "TrainPosition";
-                    temp_Chart.Width_MyChart = MyMultyChartParameters[Curr_fileMult_idx].TrainPosition.Count * 10;
+                    temp_Chart.Title_Y = "TrainSpeed"; temp_Chart.Title_X = "TrainPosition";
+                    temp_Chart.Width_MyChart = max_position * 10;
                     titleTemp = "S-V图";
-                    temp_Chart.MaxValue_MyChart = max + 10;
+                    temp_Chart.MaxValue_MyChart = max + 20;
+                    temp_Chart.Step_MyChart = 5;
                 }
+                temp_Chart.MinValue_MyChart = 0;
+                temp_Chart.Height_MyChart = 100;
                 temp_Chart.SeriesCollection = new SeriesCollection{
                     new LineSeries
                         {
@@ -822,10 +978,9 @@ namespace ATOToolDemo.ViewModel
                     Stroke=Brushes.Red,
                     StrokeThickness = 2,
                     Title = titleTemp,
-                        },};
-                temp_Chart.Step_MyChart = 1;
-                temp_Chart.MinValue_MyChart = 0;
-                temp_Chart.Height_MyChart = 100;
+                        },
+
+                };
                 MyCharts.Add(temp_Chart);
             }
             if (MyChartTypes.IsStatusChanged == true)
@@ -836,7 +991,8 @@ namespace ATOToolDemo.ViewModel
                     .Y(model => model.Y);
                 Charting.For<MeasureModel>(mapper);
                 ChartValues<MeasureModel> valuesTemp = new ChartValues<MeasureModel>();
-                for (int i = 0; i < MyMultyChartParameters[Curr_fileMult_idx].Status.Count; i++)
+                double max = 0;
+                for (int i = 1; i < MyMultyChartParameters[Curr_fileMult_idx].Status.Count; i++)
                 {
                     if ((i >= 1 && MyMultyChartParameters[Curr_fileMult_idx].Status[i - 1] != MyMultyChartParameters[Curr_fileMult_idx].Status[i]) || i == 0)
                         valuesTemp.Add(new MeasureModel
@@ -844,10 +1000,14 @@ namespace ATOToolDemo.ViewModel
                             X = MyMultyChartParameters[Curr_fileMult_idx].TrainPosition[i],
                             Y = MyMultyChartParameters[Curr_fileMult_idx].Status[i],
                         });
+                    if (MyMultyChartParameters[Curr_fileMult_idx].TrainPosition[i] >= max)
+                    {
+                        max = MyMultyChartParameters[Curr_fileMult_idx].TrainPosition[i];
+                    }
                 }
                 temp_Chart.MaxValue_MyChart = 2; temp_Chart.Height_MyChart = 100;
-                temp_Chart.Width_MyChart = MyMultyChartParameters[Curr_fileMult_idx].TrainPosition.Count * 10; ; temp_Chart.MinValue_MyChart = 0;
-                temp_Chart.Step_MyChart = 30; temp_Chart.Title_X = "TrainPosition";temp_Chart.Title_Y = "Status";
+                temp_Chart.Width_MyChart = max * 10; ; temp_Chart.MinValue_MyChart = 0;
+                temp_Chart.Step_MyChart = 30; temp_Chart.Title_X = "TrainPosition"; temp_Chart.Title_Y = "Status";
                 temp_Chart.SeriesCollection = new SeriesCollection{
                     new StepLineSeries
                         {
@@ -859,7 +1019,6 @@ namespace ATOToolDemo.ViewModel
                     AlternativeStroke= Brushes.Transparent,
                         },
                 };
-
                 MyCharts.Add(temp_Chart);
             }
             if (MyChartTypes.IsAccChanged == true)
@@ -875,16 +1034,21 @@ namespace ATOToolDemo.ViewModel
                 temp_Chart.Labels_X = new ObservableCollection<string>();
                 double max = 0;
                 double min = 0;
+                double max_position = 0;
                 for (int i = 0; i < MyMultyChartParameters[Curr_fileMult_idx].TrainAcc.Count; i++)
                 {
-                    if (min >= MyMultyChartParameters[Curr_fileMult_idx].TrainAcc[i])
+                    if (min >= MyMultyChartParameters[Curr_fileMult_idx].TrainAcc[i] && min-MyMultyChartParameters[Curr_fileMult_idx].TargetAcc[i]  <= 10)
                         min = MyMultyChartParameters[Curr_fileMult_idx].TrainAcc[i];
-                    if (min >= MyMultyChartParameters[Curr_fileMult_idx].TargetAcc[i])
+                    if (min >= MyMultyChartParameters[Curr_fileMult_idx].TargetAcc[i] &&min- MyMultyChartParameters[Curr_fileMult_idx].TargetAcc[i]  <= 10)
                         min = MyMultyChartParameters[Curr_fileMult_idx].TargetAcc[i];
-                    if (max <= MyMultyChartParameters[Curr_fileMult_idx].TrainAcc[i])
+                    if (max <= MyMultyChartParameters[Curr_fileMult_idx].TrainAcc[i]&& MyMultyChartParameters[Curr_fileMult_idx].TrainAcc[i]-max<=10)
                         max = MyMultyChartParameters[Curr_fileMult_idx].TrainAcc[i];
-                    if (max <= MyMultyChartParameters[Curr_fileMult_idx].TargetAcc[i])
+                    if (max <= MyMultyChartParameters[Curr_fileMult_idx].TargetAcc[i] && MyMultyChartParameters[Curr_fileMult_idx].TrainAcc[i] - max <= 10)
                         max = MyMultyChartParameters[Curr_fileMult_idx].TargetAcc[i];
+                    if (MyMultyChartParameters[Curr_fileMult_idx].TrainPosition[i] > max_position)
+                    {
+                        max_position = MyMultyChartParameters[Curr_fileMult_idx].TrainPosition[i];
+                    }
                     valuesTemp1.Add(new MeasureModel
                     {
                         X = MyMultyChartParameters[Curr_fileMult_idx].TrainPosition[i],
@@ -901,9 +1065,11 @@ namespace ATOToolDemo.ViewModel
                         Y = MyMultyChartParameters[Curr_fileMult_idx].TargetAcc[i],
                     });
                 }
-                temp_Chart.MaxValue_MyChart = max+0.5; temp_Chart.Height_MyChart = 100;temp_Chart.MinValue_MyChart = min - 0.3;
-                temp_Chart.Width_MyChart = MyMultyChartParameters[Curr_fileMult_idx].TrainPosition.Count * 10; temp_Chart.MinValue_MyChart = -1;
-                temp_Chart.Step_MyChart = 1;
+                temp_Chart.MaxValue_MyChart = max + 0.5; 
+                temp_Chart.Height_MyChart = 200;
+                temp_Chart.MinValue_MyChart = min - 0.3;
+                temp_Chart.Width_MyChart = max_position * 20;
+                temp_Chart.Step_MyChart = 100;
                 temp_Chart.Title_X = "TrainPosition";
                 temp_Chart.SeriesCollection = new SeriesCollection{
                     new ColumnSeries
@@ -911,14 +1077,12 @@ namespace ATOToolDemo.ViewModel
                     Fill = Brushes.Black,
                     Values = valuesTemp1,
                     PointGeometry = null,
-                    
                     Stroke=Brushes.Blue,
                     Foreground = Brushes.Blue,
                     StrokeThickness = 6,
                     Title = "Delta ACC",
                     Visibility = Visibility.Visible,
-                    MaxColumnWidth = 10, 
-                    
+                    MaxColumnWidth = 10,
                         },
                     new LineSeries
                     {
@@ -1022,19 +1186,231 @@ namespace ATOToolDemo.ViewModel
         #region [单列车函数]
         private void showSingleTrain()
         {
-            LiveChartDatas temp_Chart = new LiveChartDatas();
-            temp_Chart.SeriesCollection = new SeriesCollection{
-                new LineSeries
+            MyCharts.Clear();
+            if (MyChartTypes.SVT_Index != -1 && MyChartTypes.SVT_Index != 3)
+            {
+                LiveChartDatas temp_Chart = new LiveChartDatas();
+                var mapper = Mappers.Xy<MeasureModel>()
+                    .X(model => model.X)
+                    .Y(model => model.Y);
+                Charting.For<MeasureModel>(mapper);
+                ChartValues<MeasureModel> valuesTemp = new ChartValues<MeasureModel>();
+                string titleTemp = "";
+                double max = 0;
+                if (MyChartTypes.SVT_Index == 2)
                 {
-                    Values = new ChartValues<double> { 300, 500, 700, 400,200,300,500,900,700,500,300, 500, 700, 400,200,300,500,900,700,500,300, 500, 700, 400,200,300,500,900,700,500,300, 500, 700, 400,200,300,500,900,700,500 },
+                    double max_time = 0;
+                    for (int i = 0; i < MySinChartParameters.Speed.Count; i++)
+                    {
+
+                        valuesTemp.Add(new MeasureModel
+                        {
+                            X = MySinChartParameters.Time[i],
+                            Y = MySinChartParameters.Speed[i]
+                        });
+                        if (MySinChartParameters.Speed[i] > max)
+                        {
+                            max = MySinChartParameters.Speed[i];
+                        }
+                        if (MySinChartParameters.Time[i] > max_time)
+                        {
+                            max_time = MySinChartParameters.Time[i];
+                        }
+                    }
+                    temp_Chart.Title_X = "Time"; temp_Chart.Title_Y = "TrainSpeed";
+                    temp_Chart.Width_MyChart = max_time * 10;
+                    titleTemp = "V-T图";
+                    temp_Chart.MaxValue_MyChart = max + 20;
+                    temp_Chart.Step_MyChart = 5;
+                }
+                else if (MyChartTypes.SVT_Index == 1)
+                {
+                    double max_time = 0;
+                    for (int i = 0; i < MySinChartParameters.TrainPosition.Count; i++)
+                    {
+                        valuesTemp.Add(new MeasureModel
+                        {
+                            X = MySinChartParameters.Time[i],
+                            Y = MySinChartParameters.TrainPosition[i]
+                        });
+                        if (MySinChartParameters.TrainPosition[i] > max)
+                        {
+                            max = MySinChartParameters.TrainPosition[i];
+                        }
+                        if (MySinChartParameters.Time[i] > max_time)
+                        {
+                            max_time = MySinChartParameters.Time[i];
+                        }
+                    }
+                    temp_Chart.Title_X = "Time"; temp_Chart.Title_Y = "TrainPosition";
+                    temp_Chart.Width_MyChart = max_time * 10;
+                    titleTemp = "S-T图";
+                    temp_Chart.MaxValue_MyChart = max + 200;
+                    temp_Chart.Step_MyChart = 5;
+                }
+                else if (MyChartTypes.SVT_Index == 0)
+                {
+                    double max_position = 0;
+                    for (int i = 0; i < MySinChartParameters.TrainPosition.Count; i++)
+                    {
+                        valuesTemp.Add(new MeasureModel
+                        {
+                            Y = MySinChartParameters.Speed[i],
+                            X = MySinChartParameters.TrainPosition[i]
+                        });
+                        if (MySinChartParameters.Speed[i] > max)
+                        {
+                            max = MySinChartParameters.Speed[i];
+                        }
+                        if (MySinChartParameters.TrainPosition[i] > max_position)
+                        {
+                            max_position = MySinChartParameters.TrainPosition[i];
+                        }
+                    }
+                    temp_Chart.Title_Y = "TrainSpeed"; temp_Chart.Title_X = "TrainPosition";
+                    temp_Chart.Width_MyChart = max_position * 10;
+                    titleTemp = "S-V图";
+                    temp_Chart.MaxValue_MyChart = max + 20;
+                    temp_Chart.Step_MyChart = 5;
+                }
+                temp_Chart.MinValue_MyChart = 0;
+                temp_Chart.Height_MyChart = 400;
+                temp_Chart.SeriesCollection = new SeriesCollection{
+                    new LineSeries
+                        {
+                    Values = valuesTemp,
                     LineSmoothness = 0,
                     PointGeometry = null,
                     Stroke=Brushes.Red,
-                },
-            };
-            temp_Chart.Height_MyChart = 400;
-            MyCharts.Clear();
-            MyCharts.Add(temp_Chart);
+                    StrokeThickness = 2,
+                    Title = titleTemp,
+                        },
+                };
+                MyCharts.Add(temp_Chart);
+            }
+            if (MyChartTypes.IsStatusChanged == true)
+            {
+                LiveChartDatas temp_Chart = new LiveChartDatas();
+                var mapper = Mappers.Xy<MeasureModel>()
+                    .X(model => model.X)
+                    .Y(model => model.Y);
+                Charting.For<MeasureModel>(mapper);
+                ChartValues<MeasureModel> valuesTemp = new ChartValues<MeasureModel>();
+                double max = 0;
+                for (int i = 1; i < MySinChartParameters.Status.Count; i++)
+                {
+                    if ((i >= 1 && MySinChartParameters.Status[i - 1] != MySinChartParameters.Status[i]) || i == 0)
+                        valuesTemp.Add(new MeasureModel
+                        {
+                            X = MySinChartParameters.TrainPosition[i],
+                            Y = MySinChartParameters.Status[i],
+                        });
+                    if (MySinChartParameters.TrainPosition[i] >= max)
+                    {
+                        max = MySinChartParameters.TrainPosition[i];
+                    }
+                }
+                temp_Chart.MaxValue_MyChart = 2; temp_Chart.Height_MyChart = 400;
+                temp_Chart.Width_MyChart = max * 10; ; temp_Chart.MinValue_MyChart = 0;
+                temp_Chart.Step_MyChart = 30; temp_Chart.Title_X = "TrainPosition"; temp_Chart.Title_Y = "Status";
+                temp_Chart.SeriesCollection = new SeriesCollection{
+                    new StepLineSeries
+                        {
+                    Values = valuesTemp,
+                    PointGeometry = null,
+                    Stroke=Brushes.CadetBlue,
+                    StrokeThickness = 2,
+                    Fill= Brushes.Green,
+                    AlternativeStroke= Brushes.Transparent,
+                        },
+                };
+                MyCharts.Add(temp_Chart);
+            }
+            if (MyChartTypes.IsAccChanged == true)
+            {
+                LiveChartDatas temp_Chart = new LiveChartDatas();
+                var mapper = Mappers.Xy<MeasureModel>()
+                    .X(model => model.X)
+                    .Y(model => model.Y);
+                Charting.For<MeasureModel>(mapper);
+                ChartValues<MeasureModel> valuesTemp1 = new ChartValues<MeasureModel>();
+                ChartValues<MeasureModel> valuesTemp2 = new ChartValues<MeasureModel>();
+                ChartValues<MeasureModel> valuesTemp3 = new ChartValues<MeasureModel>();
+                temp_Chart.Labels_X = new ObservableCollection<string>();
+                double max = 0;
+                double min = 0;
+                double max_position = 0;
+                for (int i = 0; i < MySinChartParameters.TrainAcc.Count; i++)
+                {
+                    if (min >= MySinChartParameters.TrainAcc[i] && min - MySinChartParameters.TargetAcc[i] <= 10)
+                        min = MySinChartParameters.TrainAcc[i];
+                    if (min >= MySinChartParameters.TargetAcc[i] && min - MySinChartParameters.TargetAcc[i] <= 10)
+                        min = MySinChartParameters.TargetAcc[i];
+                    if (max <= MySinChartParameters.TrainAcc[i] && MySinChartParameters.TrainAcc[i] - max <= 10)
+                        max = MySinChartParameters.TrainAcc[i];
+                    if (max <= MySinChartParameters.TargetAcc[i] && MySinChartParameters.TrainAcc[i] - max <= 10)
+                        max = MySinChartParameters.TargetAcc[i];
+                    if (MySinChartParameters.TrainPosition[i] > max_position)
+                    {
+                        max_position = MySinChartParameters.TrainPosition[i];
+                    }
+                    valuesTemp1.Add(new MeasureModel
+                    {
+                        X = MySinChartParameters.TrainPosition[i],
+                        Y = MySinChartParameters.DeltaAcc[i],
+                    });
+                    valuesTemp2.Add(new MeasureModel
+                    {
+                        X = MySinChartParameters.TrainPosition[i],
+                        Y = MySinChartParameters.TrainAcc[i],
+                    });
+                    valuesTemp3.Add(new MeasureModel
+                    {
+                        X = MySinChartParameters.TrainPosition[i],
+                        Y = MySinChartParameters.TargetAcc[i],
+                    });
+                }
+                temp_Chart.MaxValue_MyChart = max + 0.5;
+                temp_Chart.Height_MyChart = 400;
+                temp_Chart.MinValue_MyChart = min - 0.3;
+                temp_Chart.Width_MyChart = max_position * 20;
+                temp_Chart.Step_MyChart = 100;
+                temp_Chart.Title_X = "TrainPosition";
+                temp_Chart.SeriesCollection = new SeriesCollection{
+                    new ColumnSeries
+                        {
+                    Fill = Brushes.Black,
+                    Values = valuesTemp1,
+                    PointGeometry = null,
+                    Stroke=Brushes.Blue,
+                    Foreground = Brushes.Blue,
+                    StrokeThickness = 6,
+                    Title = "Delta ACC",
+                    Visibility = Visibility.Visible,
+                    MaxColumnWidth = 10,
+                        },
+                    new LineSeries
+                    {
+                    Fill=Brushes.Transparent,
+                    Values = valuesTemp2,
+                    LineSmoothness = 1,
+                    PointGeometry = null,
+                    Stroke=Brushes.DarkRed,
+                    StrokeThickness = 2,
+                    Title = "TrainACC"
+                    },
+                    new LineSeries{
+                    Fill=Brushes.Transparent,
+                    Values = valuesTemp3,
+                    LineSmoothness = 1,
+                    PointGeometry = null,
+                    Stroke=Brushes.Coral,
+                    StrokeThickness = 2,
+                    Title="TargetACC"
+                    },
+                };
+                MyCharts.Add(temp_Chart);
+            }
         }
         #endregion
 

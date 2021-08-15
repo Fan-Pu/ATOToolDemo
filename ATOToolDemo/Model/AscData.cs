@@ -31,8 +31,7 @@ namespace ATOToolDemo.ViewModel
         public string Range
         {
             get { return range; }
-            set { range = value;
-            }
+            set { range = value;}
         }
 
         private string tips;
