@@ -592,22 +592,33 @@
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <Grid>
-                                        <lvc:CartesianChart Width="{Binding Width_MyChart}"  Height="{Binding Height_MyChart}"
-                                                            Series="{Binding SeriesCollection}" DisableAnimations="True"
-                                                            ScrollBarFill="Transparent" LegendLocation="Left" 
-                                                            >
+                                        <lvc:CartesianChart 
+                                        Width="{Binding Width_MyChart}"  
+                                        Height="{Binding Height_MyChart}"
+                                        Series="{Binding SeriesCollection}" 
+                                        DisableAnimations="True"
+                                        ScrollBarFill="Transparent" 
+                                        LegendLocation="Left">
                                             <!--<lvc:CartesianChart.DataTooltip>
                                                 <lvc:DefaultTooltip BulletSize="20" Background="Gray" />
                                             </lvc:CartesianChart.DataTooltip>-->
                                             <lvc:CartesianChart.AxisX>
-                                                <lvc:Axis Labels="{Binding Labels_X}" Title="{Binding Title_X}">
+                                                <lvc:Axis Title="{Binding Title_X}">
                                                     <lvc:Axis.Separator>
-                                                        <lvc:Separator Step="{Binding Step_MyChart}"/>
+                                                        <lvc:Separator Step="{Binding Step_X}"/>
                                                     </lvc:Axis.Separator>
                                                 </lvc:Axis>
                                             </lvc:CartesianChart.AxisX>
                                             <lvc:CartesianChart.AxisY>
-                                                <lvc:Axis MaxValue="{Binding MaxValue_MyChart}" MinValue="{Binding MinValue_MyChart}" Title="{Binding Title_Y}"/>
+                                                <lvc:Axis MaxValue="{Binding MaxValue_MyChart}"
+                                                          MinValue="{Binding MinValue_MyChart}" 
+                                                          Title="{Binding Title_Y}"
+                                                          Labels="{Binding Label_Y}"
+                                                          >
+                                                    <lvc:Axis.Separator>
+                                                        <lvc:Separator Step="{Binding Step_Y}"/>
+                                                    </lvc:Axis.Separator>
+                                                </lvc:Axis>
                                             </lvc:CartesianChart.AxisY>
                                         </lvc:CartesianChart>
                                     </Grid>
@@ -730,7 +741,7 @@
                             <DataGridTextColumn.CellStyle>
                                 <Style TargetType="DataGridCell">
                                     <Setter Property="Background" Value="{Binding Asc_Background,Mode=TwoWay}"/>
-                                    <Setter Property="Foreground" Value="Black"/>
+                                    <Setter Property="Foreground" Value="#7FFF0000"/>
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>

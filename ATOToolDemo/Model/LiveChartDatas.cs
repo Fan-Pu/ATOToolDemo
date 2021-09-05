@@ -22,14 +22,11 @@ namespace ATOToolDemo.ViewModel
                 RaisePropertyChanged();
             }
         }
-
-        private ObservableCollection<string> labels_X;
-        public ObservableCollection<string> Labels_X
+        private ObservableCollection<string> label_Y;
+        public ObservableCollection<string> Label_Y
         {
-            get { return labels_X; }
-            set
-            {
-                labels_X = value;
+            get { return label_Y; }
+            set { label_Y = value;
                 RaisePropertyChanged();
             }
         }
@@ -52,11 +49,21 @@ namespace ATOToolDemo.ViewModel
             }
         }
 
-        private double step_MyChart;
-        public double Step_MyChart
+        private double step_X;
+        public double Step_X
         {
-            get { return step_MyChart; }
-            set { step_MyChart = value;
+            get { return step_X; }
+            set { step_X = value;
+                RaisePropertyChanged();
+            }
+        }
+        private double step_Y;
+        public double Step_Y
+        {
+            get { return step_Y; }
+            set
+            {
+                step_Y = value;
                 RaisePropertyChanged();
             }
         }
