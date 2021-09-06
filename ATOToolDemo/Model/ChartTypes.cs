@@ -10,7 +10,6 @@ namespace ATOToolDemo.Model
 {
     public class ChartTypes:ViewModelBase
     {
-
         private BindingList<string> svt;
         public BindingList<string> SVT
         {

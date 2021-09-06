@@ -10,7 +10,7 @@ using LiveCharts;
 
 namespace ATOToolDemo.ViewModel
 {
-    public class LiveChartDatas:ViewModelBase
+    public class LiveChartParemeters: ViewModelBase
     {
         private SeriesCollection seriesCollection;
         public SeriesCollection SeriesCollection

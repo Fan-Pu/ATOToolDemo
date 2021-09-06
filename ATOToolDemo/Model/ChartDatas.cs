@@ -8,7 +8,7 @@ using GalaSoft.MvvmLight;
 
 namespace ATOToolDemo.Model
 {
-    public class ChartParameter:ViewModelBase
+    public class ChartDatas:ViewModelBase
     {
         private BindingList<double> time;
         public BindingList<double> Time

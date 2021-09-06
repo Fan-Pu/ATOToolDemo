@@ -9,7 +9,7 @@ using System.Windows.Media;
 
 namespace ATOToolDemo.ViewModel
 {
-    public class AscData:ViewModelBase
+    public class AscDatas:ViewModelBase
     {
         private string name;
         public string Name

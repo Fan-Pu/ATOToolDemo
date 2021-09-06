@@ -27,10 +27,10 @@ namespace ATOToolDemo
             this.DataContext = new MainViewModel();
             
         }
-        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        //private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
 
-        }
+        //}
 
         private void WatermarkComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

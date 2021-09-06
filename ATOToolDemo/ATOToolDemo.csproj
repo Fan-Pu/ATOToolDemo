@@ -161,11 +161,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Model\AscData.cs" />
+    <Compile Include="Model\AscDatas.cs" />
     <Compile Include="Model\ExcelHelper.cs" />
-    <Compile Include="Model\LiveChartDatas.cs" />
-    <Compile Include="Model\LogFile_Mult.cs" />
-    <Compile Include="Model\ChartParameter.cs" />
+    <Compile Include="Model\LiveChartParemeters.cs" />
+    <Compile Include="Model\MultyTrainDataGrid.cs" />
+    <Compile Include="Model\ChartDatas.cs" />
     <Compile Include="Model\ChartTypes.cs" />
     <Compile Include="Model\MeasureModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
