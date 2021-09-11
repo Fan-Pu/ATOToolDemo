@@ -20,7 +20,7 @@
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
+            <RowDefinition Height="0.2*" />
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
@@ -32,7 +32,7 @@
             x:Name="ribbon"
             Grid.Row="0"
             AutomaticStateManagement="True"
-            CanMinimize="True"
+            CanMinimize="False"
             IsQuickAccessToolBarMenuDropDownVisible="False"
             IsQuickAccessToolBarVisible="False">
             <Fluent:RibbonTabItem Header="日志文件">
@@ -398,7 +398,7 @@
                                             AutoGenerateColumns="False"
                                             HorizontalScrollBarVisibility="Visible"
                                             ItemsSource="{Binding LogFileProp_Mult, Mode=TwoWay}"
-                                            SelectedIndex="{Binding Curr_MultProp_idx}"
+                                            SelectedIndex="{Binding Curr_MultProp_idx,Mode=TwoWay}"
                                             >
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn
@@ -406,11 +406,7 @@
                                                     MinWidth="70"
                                                     Binding="{Binding FileName}"
                                                     Header="文件" />
-                                                <!--<DataGridTextColumn
-                                                    Width="auto"
-                                                    MinWidth="60"
-                                                    Binding="{Binding Train_logMult}"
-                                                    Header="列车" />-->
+                                                
                                                 <DataGridTextColumn
                                                     Width="auto"
                                                     MinWidth="70"
@@ -422,8 +418,10 @@
                                                     Header="时间粒度">
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
-                                                            <ComboBox ItemsSource="{Binding Granularity}"
-                                                                      SelectedIndex="{Binding Gra_idx}" />
+                                                            <ComboBox ItemsSource="{Binding Granularity,Mode=TwoWay}"
+                                                                      SelectedIndex="{Binding Gra_idx,Mode=TwoWay}"
+                                                                      
+                                                                      />
                                                         </DataTemplate>
                                                     </DataGridTemplateColumn.CellTemplate>
                                                 </DataGridTemplateColumn>
@@ -549,9 +547,6 @@
                                         DisableAnimations="True"
                                         ScrollBarFill="Transparent" 
                                         LegendLocation="None">
-                                            <!--<lvc:CartesianChart.DataTooltip>
-                                                <lvc:DefaultTooltip BulletSize="20" Background="Gray" />
-                                            </lvc:CartesianChart.DataTooltip>-->
                                             <lvc:CartesianChart.AxisX>
                                                 <lvc:Axis Title="{Binding Title_X}">
                                                     <lvc:Axis.Separator>
@@ -592,7 +587,7 @@
                 </Grid.ColumnDefinitions>
                 <DataGrid
                        Grid.Column="0"
-                       Height="440"
+                       Height="{Binding Height_Datagrid}"
                        VerticalAlignment="Top"
                        AutoGenerateColumns="False"
                        HorizontalScrollBarVisibility="Auto"
@@ -637,7 +632,7 @@
                     Style="{StaticResource gridSplitterStyleForResizeColumns}" />
                 <DataGrid
                        Grid.Column="2"
-                       Height="440"
+                       Height="{Binding Height_Datagrid}"
                        VerticalAlignment="Top"
                        AutoGenerateColumns="False"
                        HorizontalScrollBarVisibility="Auto"
@@ -658,6 +653,7 @@
                                     <Setter Property="ToolTip" Value="{Binding Tips}" />
                                     <Setter Property="Background" Value="{Binding Asc_Background,Mode=TwoWay}"/>
                                     <Setter Property="Foreground" Value="Black"/>
+                                    
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>
@@ -671,14 +667,15 @@
                                 <Style TargetType="DataGridCell">
                                     <Setter Property="Background" Value="{Binding Asc_Background,Mode=TwoWay}"/>
                                     <Setter Property="Foreground" Value="Black"/>
-                                    <Style.Triggers>
+                                    
+                                    <!--<Style.Triggers>
                                         <DataTrigger Binding="{Binding IsDataChanged}" Value="true">
                                             <Setter Property="Background" Value="Black"/>
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding IsDataChanged}" Value="false">
                                             <Setter Property="Background" Value="Green"/>
                                         </DataTrigger>
-                                    </Style.Triggers>
+                                    </Style.Triggers>-->
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>
@@ -691,7 +688,7 @@
                             <DataGridTextColumn.CellStyle>
                                 <Style TargetType="DataGridCell">
                                     <Setter Property="Background" Value="{Binding Asc_Background,Mode=TwoWay}"/>
-                                    <Setter Property="Foreground" Value="#7FFF0000"/>
+                                    <Setter Property="Foreground" Value="Black"/>
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>

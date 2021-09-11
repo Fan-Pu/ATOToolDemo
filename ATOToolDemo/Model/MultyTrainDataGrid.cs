@@ -41,6 +41,7 @@ namespace ATOToolDemo.ViewModel
             {
                 granularity = value;
                 RaisePropertyChanged();
+
             }
         }
 
@@ -52,6 +53,7 @@ namespace ATOToolDemo.ViewModel
             {
                 gra_idx = value;
                 RaisePropertyChanged();
+                
             }
         }
 

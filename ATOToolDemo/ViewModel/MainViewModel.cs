@@ -173,7 +173,7 @@ namespace ATOToolDemo.ViewModel
                             paraTemp.Status.Add(-1.0);
                     }
                 }
-                
+
                 MySinChartDatass = paraTemp;
             }
         }
@@ -207,7 +207,8 @@ namespace ATOToolDemo.ViewModel
         public int MySinChartTypesIdx
         {
             get { return mySinChartTypesIdx; }
-            set {
+            set
+            {
                 mySinChartTypesIdx = value;
                 RaisePropertyChanged();
             }
@@ -359,6 +360,7 @@ namespace ATOToolDemo.ViewModel
                 RaisePropertyChanged();
             }
         }
+
         private int myMultychartTypesIdx;
         public int MyMultychartTypesIdx
         {
@@ -369,6 +371,7 @@ namespace ATOToolDemo.ViewModel
                 RaisePropertyChanged();
             }
         }
+
         private BindingList<ChartDatas> myMultyChartDatass;
         public BindingList<ChartDatas> MyMultyChartDatass
         {
@@ -541,7 +544,7 @@ namespace ATOToolDemo.ViewModel
                 RaisePropertyChanged();
             }
         }
-        
+
 
         #endregion
 
@@ -603,7 +606,8 @@ namespace ATOToolDemo.ViewModel
                     if (Parames_Asc[Last_Ascidx].Data != Last_AscData)
                     {
                         Vis_Change = Visibility.Visible;
-                        parames_Asc[Last_Ascidx].Asc_Background = new SolidColorBrush(Colors.Green);
+                        parames_Asc[Last_Ascidx].Asc_Background = new SolidColorBrush(Colors.GreenYellow);
+
                     }
                 }
                 Last_Ascidx = Curr_Ascpara_idx;
@@ -696,6 +700,30 @@ namespace ATOToolDemo.ViewModel
             }
         }
 
+        private double height;
+        public double Height
+        {
+            get { return height; }
+            set
+            {
+                height = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private double height_Datagrid;
+
+        public double Height_Datagrid
+        {
+            get { return height_Datagrid; }
+            set
+            {
+                height_Datagrid = value;
+                RaisePropertyChanged();
+            }
+        }
+
+
         #endregion
 
         #endregion
@@ -769,10 +797,7 @@ namespace ATOToolDemo.ViewModel
             MyMultyChartDatass = new BindingList<ChartDatas>();
             MyMultyChartTypes = new BindingList<string>() { "S-V图", "S-T图", "V-T图", "Status图", "ACC图", "不显示" };
             MySinChartTypes = new BindingList<string>() { "S-V图", "S-T图", "V-T图", "Status图", "ACC图", "不显示" };
-            //MyChartTypes.IsStatusChanged = false; MyChartTypes.LastStatus = false;
-            //MyChartTypes.IsAccChanged = false; MyChartTypes.LastAcc = false;
-            //MyChartTypes.SVT = new BindingList<string>() { "S-V图", "S-T图", "V-T图", "不显示" };
-            //thisTemp = -1;
+            Height_Datagrid = Height / 1.3;
 
             DateTime dt = DateTime.Now;
             NowTime = dt.ToLongDateString().ToString();
@@ -789,6 +814,7 @@ namespace ATOToolDemo.ViewModel
             Curr_Ascfile_idx = -1;
             MyMultychartTypesIdx = -1;
             MySinChartTypesIdx = -1;
+
         }   //初始化属性
 
         private void InitCommands()
@@ -823,12 +849,12 @@ namespace ATOToolDemo.ViewModel
 
         private void saveLogFileToExcelCommand()
         {
-            System.Windows.Forms.OpenFileDialog openFileDialog = new OpenFileDialog();
+            System.Windows.Forms.SaveFileDialog saveFileDialog = new SaveFileDialog();
             string temp_fileNames = "";
-            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                openFileDialog.Filter = "(*.xlms)|*.xlms";
-                temp_fileNames = openFileDialog.FileName;
+                saveFileDialog.Filter = "(*.xlms)|*.xlms";
+                temp_fileNames = saveFileDialog.FileName;
             }
             ExcelHelper excel_create = new ExcelHelper(temp_fileNames);
             DataTable data_New = new DataTable();
@@ -873,10 +899,10 @@ namespace ATOToolDemo.ViewModel
         private void addLogFile()
         {
             MultyTrainDataGrid propTmp = new MultyTrainDataGrid();
-            propTmp.Gra_idx = -1;
+            propTmp.Gra_idx = 1;
             propTmp.FileName = FileNames_Sim[Curr_fileMult_idx];
             propTmp.ChartType = MyMultyChartTypes[MyMultychartTypesIdx];
-            propTmp.Granularity = new ObservableCollection<string>() { "0.5倍", "1.5倍" };
+            propTmp.Granularity = new ObservableCollection<string>() { "0.5倍", "1倍", "1.5倍" };
             LogFileProp_Mult.Add(propTmp);
 
         } //多列车
@@ -886,16 +912,36 @@ namespace ATOToolDemo.ViewModel
             for (int j = 0; j < LogFileProp_Mult.Count; j++)
             {
                 string thisTemp = " ";
-                try {  thisTemp = LogFileProp_Mult[j].ChartType; }
+                double Gra_Temp = 1.0;
+                if (LogFileProp_Mult[j].Granularity[LogFileProp_Mult[j].Gra_idx] == "1.5倍")
+                    Gra_Temp = 1.5;
+                else if (LogFileProp_Mult[j].Granularity[LogFileProp_Mult[j].Gra_idx] == "0.5倍")
+                    Gra_Temp = 0.5;
+                else if (LogFileProp_Mult[j].Granularity[LogFileProp_Mult[j].Gra_idx] == "1倍")
+                    Gra_Temp = 1.0;
+                try
+                {
+                    thisTemp = LogFileProp_Mult[j].ChartType;
+                }
                 catch
                 {
                     MessageBox.Show("您尚未选择图像类型！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
                 }
-                
+                ChartDatas TempChartData = new ChartDatas();
+
+                for (int i = 0; i < FileNames_Sim.Count; i++)
+                {
+                    if (LogFileProp_Mult[j].FileName == FileNames_Sim[i])
+                    {
+                        TempChartData = MyMultyChartDatass[i];
+                        break;
+                    }
+                }
+
                 if (thisTemp == "不显示")
                     continue;
-                if (thisTemp == "V-T图"|| thisTemp == "S-T图"|| thisTemp == "S-V图")
+                if (thisTemp == "V-T图" || thisTemp == "S-T图" || thisTemp == "S-V图")
                 {
                     LiveChartParemeters temp_Chart = new LiveChartParemeters();
                     var mapper = Mappers.Xy<MeasureModel>()
@@ -908,25 +954,25 @@ namespace ATOToolDemo.ViewModel
                     if (thisTemp == "V-T图")
                     {
                         double max_time = 0;
-                        for (int i = 0; i < MyMultyChartDatass[Curr_fileMult_idx].Speed.Count; i++)
+                        for (int i = 0; i < TempChartData.Speed.Count; i++)
                         {
 
                             valuesTemp.Add(new MeasureModel
                             {
-                                X = MyMultyChartDatass[Curr_fileMult_idx].Time[i],
-                                Y = MyMultyChartDatass[Curr_fileMult_idx].Speed[i]
+                                X = TempChartData.Time[i],
+                                Y = TempChartData.Speed[i]
                             });
-                            if (MyMultyChartDatass[Curr_fileMult_idx].Speed[i] > max)
+                            if (TempChartData.Speed[i] > max)
                             {
-                                max = MyMultyChartDatass[Curr_fileMult_idx].Speed[i];
+                                max = TempChartData.Speed[i];
                             }
-                            if (MyMultyChartDatass[Curr_fileMult_idx].Time[i] > max_time)
+                            if (TempChartData.Time[i] > max_time)
                             {
-                                max_time = MyMultyChartDatass[Curr_fileMult_idx].Time[i];
+                                max_time = TempChartData.Time[i];
                             }
                         }
                         temp_Chart.Title_X = "Time"; temp_Chart.Title_Y = "TrainSpeed";
-                        temp_Chart.Width_MyChart = max_time * 10;
+                        temp_Chart.Width_MyChart = max_time * 10 * Gra_Temp;
                         titleTemp = "V-T图";
                         temp_Chart.MaxValue_MyChart = max + 20;
                         temp_Chart.Step_X = 5;
@@ -935,24 +981,24 @@ namespace ATOToolDemo.ViewModel
                     if (thisTemp == "S-T图")
                     {
                         double max_time = 0;
-                        for (int i = 0; i < MyMultyChartDatass[Curr_fileMult_idx].TrainPosition.Count; i++)
+                        for (int i = 0; i < TempChartData.TrainPosition.Count; i++)
                         {
                             valuesTemp.Add(new MeasureModel
                             {
-                                X = MyMultyChartDatass[Curr_fileMult_idx].Time[i],
-                                Y = MyMultyChartDatass[Curr_fileMult_idx].TrainPosition[i]
+                                X = TempChartData.Time[i],
+                                Y = TempChartData.TrainPosition[i]
                             });
-                            if (MyMultyChartDatass[Curr_fileMult_idx].TrainPosition[i] > max)
+                            if (TempChartData.TrainPosition[i] > max)
                             {
-                                max = MyMultyChartDatass[Curr_fileMult_idx].TrainPosition[i];
+                                max = TempChartData.TrainPosition[i];
                             }
-                            if (MyMultyChartDatass[Curr_fileMult_idx].Time[i] > max_time)
+                            if (TempChartData.Time[i] > max_time)
                             {
-                                max_time = MyMultyChartDatass[Curr_fileMult_idx].Time[i];
+                                max_time = TempChartData.Time[i];
                             }
                         }
                         temp_Chart.Title_X = "Time"; temp_Chart.Title_Y = "TrainPosition";
-                        temp_Chart.Width_MyChart = max_time * 10;
+                        temp_Chart.Width_MyChart = max_time * 10 * Gra_Temp;
                         titleTemp = "S-T图";
                         temp_Chart.MaxValue_MyChart = max + 200;
                         temp_Chart.Step_X = 5;
@@ -961,32 +1007,36 @@ namespace ATOToolDemo.ViewModel
                     if (thisTemp == "S-V图")
                     {
                         double max_position = 0;
-                        for (int i = 0; i < MyMultyChartDatass[Curr_fileMult_idx].TrainPosition.Count; i++)
+                        for (int i = 0; i < TempChartData.TrainPosition.Count; i++)
                         {
                             valuesTemp.Add(new MeasureModel
                             {
-                                Y = MyMultyChartDatass[Curr_fileMult_idx].Speed[i],
-                                X = MyMultyChartDatass[Curr_fileMult_idx].TrainPosition[i]
+                                Y = TempChartData.Speed[i],
+                                X = TempChartData.TrainPosition[i]
                             });
-                            if (MyMultyChartDatass[Curr_fileMult_idx].Speed[i] > max)
+                            if (TempChartData.Speed[i] > max)
                             {
-                                max = MyMultyChartDatass[Curr_fileMult_idx].Speed[i];
+                                max = TempChartData.Speed[i];
                             }
-                            if (MyMultyChartDatass[Curr_fileMult_idx].TrainPosition[i] > max_position)
+                            if (TempChartData.TrainPosition[i] > max_position)
                             {
-                                max_position = MyMultyChartDatass[Curr_fileMult_idx].TrainPosition[i];
+                                max_position = TempChartData.TrainPosition[i];
                             }
                         }
                         temp_Chart.Title_Y = "TrainSpeed";
                         temp_Chart.Title_X = "TrainPosition";
-                        temp_Chart.Width_MyChart = max_position * 10;
+                        temp_Chart.Width_MyChart = max_position * 10 * Gra_Temp;
                         titleTemp = "S-V图";
                         temp_Chart.MaxValue_MyChart = max + 20;
-                        temp_Chart.Step_X = 5;
+                        if (max_position > 20000)
+                            temp_Chart.Step_X = (int)max_position / 1000;
+                        else
+                            temp_Chart.Step_X = (int)max_position / 100;
+                        temp_Chart.Step_Y = max / 10;
                         temp_Chart.Step_Y = max / 2;
                     }
                     temp_Chart.MinValue_MyChart = 0;
-                    temp_Chart.Height_MyChart = 150;
+                    temp_Chart.Height_MyChart = Height / 2.7;
                     temp_Chart.SeriesCollection = new SeriesCollection{
                     new LineSeries
                         {
@@ -998,7 +1048,7 @@ namespace ATOToolDemo.ViewModel
                     Title = titleTemp,
                         } };
                     MyCharts.Add(temp_Chart);
-                } 
+                }
                 else if (thisTemp == "Status图")
                 {
                     LiveChartParemeters temp_Chart = new LiveChartParemeters();
@@ -1008,24 +1058,28 @@ namespace ATOToolDemo.ViewModel
                     Charting.For<MeasureModel>(mapper);
                     ChartValues<MeasureModel> valuesTemp = new ChartValues<MeasureModel>();
                     double max = 0;
-                    for (int i = 1; i < MyMultyChartDatass[Curr_fileMult_idx].Status.Count; i++)
+                    for (int i = 1; i < TempChartData.Status.Count; i++)
                     {
-                        if ((i >= 1 && MyMultyChartDatass[Curr_fileMult_idx].Status[i - 1] != MyMultyChartDatass[Curr_fileMult_idx].Status[i]) || i == 0)
+                        if ((i >= 1 && TempChartData.Status[i - 1] != TempChartData.Status[i]) || i == 0)
                             valuesTemp.Add(new MeasureModel
                             {
-                                X = MyMultyChartDatass[Curr_fileMult_idx].TrainPosition[i],
-                                Y = MyMultyChartDatass[Curr_fileMult_idx].Status[i],
+                                X = TempChartData.TrainPosition[i],
+                                Y = TempChartData.Status[i],
                             });
-                        if (MyMultyChartDatass[Curr_fileMult_idx].TrainPosition[i] >= max)
+                        if (TempChartData.TrainPosition[i] >= max)
                         {
-                            max = MyMultyChartDatass[Curr_fileMult_idx].TrainPosition[i];
+                            max = TempChartData.TrainPosition[i];
                         }
                     }
                     temp_Chart.MaxValue_MyChart = 2;
-                    temp_Chart.Height_MyChart = 100;
-                    temp_Chart.Width_MyChart = max * 10; ;
+                    temp_Chart.Height_MyChart = Height / 2.7;
+                    temp_Chart.Width_MyChart = max * 10 * Gra_Temp; ;
                     temp_Chart.MinValue_MyChart = 0;
-                    temp_Chart.Step_X = 10;
+                    if (max > 20000)
+                        temp_Chart.Step_X = (int)max / 1000;
+                    else
+                        temp_Chart.Step_X = (int)max / 100;
+                    temp_Chart.Step_Y = max / 10;
                     temp_Chart.Step_Y = 1;
                     temp_Chart.Title_X = "TrainPosition";
                     temp_Chart.Title_Y = "Status";
@@ -1039,6 +1093,7 @@ namespace ATOToolDemo.ViewModel
                     StrokeThickness = 2,
                     Fill= Brushes.Green,
                     AlternativeStroke= Brushes.Transparent,
+                    Title="Statu状态"
                         },
                 };
                     MyCharts.Add(temp_Chart);
@@ -1057,41 +1112,44 @@ namespace ATOToolDemo.ViewModel
                     double max = 0;
                     double min = 0;
                     double max_position = 0;
-                    for (int i = 0; i < MyMultyChartDatass[Curr_fileMult_idx].TrainAcc.Count; i++)
+                    for (int i = 0; i < TempChartData.TrainAcc.Count; i++)
                     {
-                        if (min >= MyMultyChartDatass[Curr_fileMult_idx].TrainAcc[i] && min - MyMultyChartDatass[Curr_fileMult_idx].TargetAcc[i] <= 10)
-                            min = MyMultyChartDatass[Curr_fileMult_idx].TrainAcc[i];
-                        if (min >= MyMultyChartDatass[Curr_fileMult_idx].TargetAcc[i] && min - MyMultyChartDatass[Curr_fileMult_idx].TargetAcc[i] <= 10)
-                            min = MyMultyChartDatass[Curr_fileMult_idx].TargetAcc[i];
-                        if (max <= MyMultyChartDatass[Curr_fileMult_idx].TrainAcc[i] && MyMultyChartDatass[Curr_fileMult_idx].TrainAcc[i] - max <= 10)
-                            max = MyMultyChartDatass[Curr_fileMult_idx].TrainAcc[i];
-                        if (max <= MyMultyChartDatass[Curr_fileMult_idx].TargetAcc[i] && MyMultyChartDatass[Curr_fileMult_idx].TrainAcc[i] - max <= 10)
-                            max = MyMultyChartDatass[Curr_fileMult_idx].TargetAcc[i];
-                        if (MyMultyChartDatass[Curr_fileMult_idx].TrainPosition[i] > max_position)
+                        if (min >= TempChartData.TrainAcc[i] && min - TempChartData.TargetAcc[i] <= 10)
+                            min = TempChartData.TrainAcc[i];
+                        if (min >= TempChartData.TargetAcc[i] && min - TempChartData.TargetAcc[i] <= 10)
+                            min = TempChartData.TargetAcc[i];
+                        if (max <= TempChartData.TrainAcc[i] && TempChartData.TrainAcc[i] - max <= 10)
+                            max = TempChartData.TrainAcc[i];
+                        if (max <= TempChartData.TargetAcc[i] && TempChartData.TrainAcc[i] - max <= 10)
+                            max = TempChartData.TargetAcc[i];
+                        if (TempChartData.TrainPosition[i] > max_position)
                         {
-                            max_position = MyMultyChartDatass[Curr_fileMult_idx].TrainPosition[i];
+                            max_position = TempChartData.TrainPosition[i];
                         }
                         valuesTemp1.Add(new MeasureModel
                         {
-                            X = MyMultyChartDatass[Curr_fileMult_idx].TrainPosition[i],
-                            Y = MyMultyChartDatass[Curr_fileMult_idx].DeltaAcc[i],
+                            X = TempChartData.TrainPosition[i],
+                            Y = TempChartData.DeltaAcc[i],
                         });
                         valuesTemp2.Add(new MeasureModel
                         {
-                            X = MyMultyChartDatass[Curr_fileMult_idx].TrainPosition[i],
-                            Y = MyMultyChartDatass[Curr_fileMult_idx].TrainAcc[i],
+                            X = TempChartData.TrainPosition[i],
+                            Y = TempChartData.TrainAcc[i],
                         });
                         valuesTemp3.Add(new MeasureModel
                         {
-                            X = MyMultyChartDatass[Curr_fileMult_idx].TrainPosition[i],
-                            Y = MyMultyChartDatass[Curr_fileMult_idx].TargetAcc[i],
+                            X = TempChartData.TrainPosition[i],
+                            Y = TempChartData.TargetAcc[i],
                         });
                     }
                     temp_Chart.MaxValue_MyChart = max + 0.5;
-                    temp_Chart.Height_MyChart = 200;
+                    temp_Chart.Height_MyChart = Height / 2.7;
                     temp_Chart.MinValue_MyChart = min - 0.3;
-                    temp_Chart.Width_MyChart = max_position * 20;
-                    temp_Chart.Step_X = 20;
+                    temp_Chart.Width_MyChart = max_position * 20 * Gra_Temp;
+                    if (max_position > 20000)
+                        temp_Chart.Step_X = (int)max_position / 1000;
+                    else
+                        temp_Chart.Step_X = (int)max_position / 100;
                     temp_Chart.Step_Y = max / 2;
                     temp_Chart.Title_X = "TrainPosition";
                     temp_Chart.SeriesCollection = new SeriesCollection{
@@ -1135,7 +1193,9 @@ namespace ATOToolDemo.ViewModel
         private void deleteMultTrain()
         {
 
-            try { LogFileProp_Mult.RemoveAt(Curr_MultProp_idx);
+            try
+            {
+                LogFileProp_Mult.RemoveAt(Curr_MultProp_idx);
                 showMultTrain();
             }
             catch
@@ -1213,12 +1273,14 @@ namespace ATOToolDemo.ViewModel
         private void showSingleTrain()
         {
             string thisTemp = "";
-            try {  thisTemp = MySinChartTypes[MySinChartTypesIdx]; }
-            catch { MessageBox.Show("您尚未选择图像类型！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+            try { thisTemp = MySinChartTypes[MySinChartTypesIdx]; }
+            catch
+            {
+                MessageBox.Show("您尚未选择图像类型！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
             MyCharts.Clear();
-            if (thisTemp == "V-T图"|| thisTemp == "S-T图" || thisTemp == "S-V图")
+            if (thisTemp == "V-T图" || thisTemp == "S-T图" || thisTemp == "S-V图")
             {
                 LiveChartParemeters temp_Chart = new LiveChartParemeters();
                 var mapper = Mappers.Xy<MeasureModel>()
@@ -1306,11 +1368,13 @@ namespace ATOToolDemo.ViewModel
                     temp_Chart.Width_MyChart = max_position * 10;
                     titleTemp = "S-V图";
                     temp_Chart.MaxValue_MyChart = max + 5;
-                    temp_Chart.Step_X = 5;
+                    if (max_position > 20000)
+                        temp_Chart.Step_X = (int)max_position / 1000;
+                    else temp_Chart.Step_X = (int)max_position / 100;
                     temp_Chart.Step_Y = max / 10;
                 }
                 temp_Chart.MinValue_MyChart = 0;
-                temp_Chart.Height_MyChart = 400;
+                temp_Chart.Height_MyChart = Height / 1.3;
                 temp_Chart.SeriesCollection = new SeriesCollection{
                     new LineSeries
                         {
@@ -1347,14 +1411,18 @@ namespace ATOToolDemo.ViewModel
                     }
                 }
                 temp_Chart.MaxValue_MyChart = 2;
-                temp_Chart.Height_MyChart = 400;
+                temp_Chart.Height_MyChart = Height / 1.3;
                 temp_Chart.Width_MyChart = max * 10; ;
                 temp_Chart.MinValue_MyChart = 0;
-                temp_Chart.Step_X = 10;
+                if (max > 20000)
+                    temp_Chart.Step_X = (int)max / 1000;
+                else temp_Chart.Step_X = (int)max / 100;
+                temp_Chart.Step_Y = max / 10;
                 temp_Chart.Step_Y = 1;
                 temp_Chart.Label_Y = new ObservableCollection<string>() { "Brake", "Coast", "Traction" };
                 temp_Chart.Title_X = "TrainPosition";
                 temp_Chart.Title_Y = "Status";
+
                 temp_Chart.SeriesCollection = new SeriesCollection{
                     new StepLineSeries
                         {
@@ -1364,7 +1432,7 @@ namespace ATOToolDemo.ViewModel
                     StrokeThickness = 2,
                     Fill= Brushes.Green,
                     AlternativeStroke= Brushes.Transparent,
-
+                    Title = "Status状态"
                         },
                 };
                 MyCharts.Add(temp_Chart);
@@ -1414,10 +1482,14 @@ namespace ATOToolDemo.ViewModel
                     });
                 }
                 temp_Chart.MaxValue_MyChart = max + 0.3;
-                temp_Chart.Height_MyChart = 400;
+                temp_Chart.Height_MyChart = Height / 1.3;
                 temp_Chart.MinValue_MyChart = min - 0.3;
                 temp_Chart.Width_MyChart = max_position * 20;
-                temp_Chart.Step_X = 50;
+                if (max_position > 20000)
+                    temp_Chart.Step_X = (int)max_position / 1000;
+                else
+                    temp_Chart.Step_X = (int)max_position / 100;
+                temp_Chart.Step_Y = max / 10;
                 temp_Chart.Step_Y = 1;
                 temp_Chart.Title_X = "TrainPosition";
                 temp_Chart.SeriesCollection = new SeriesCollection{
@@ -1461,6 +1533,7 @@ namespace ATOToolDemo.ViewModel
         #region[ASC]
         private void read_AscFiles()
         {
+            MessageBox.Show("请读取TXT文件！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
             System.Windows.Forms.OpenFileDialog openfiledialog = new System.Windows.Forms.OpenFileDialog();
             if (openfiledialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -1468,8 +1541,9 @@ namespace ATOToolDemo.ViewModel
                 var start_idx = openfiledialog.FileName.LastIndexOf("\\") + 1;
                 AscSimFileNames.Add(openfiledialog.FileName.Substring(start_idx, openfiledialog.FileName.LastIndexOf(".") - start_idx));
                 Curr_Ascpara_idx = -1;
+                MessageBox.Show("读取成功！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            MessageBox.Show("打开成功！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+
         }
         private void show_AscDatas()
         {
@@ -1487,8 +1561,10 @@ namespace ATOToolDemo.ViewModel
                             Datas_Asc.Add(temp);
                     }
                 }
+                parames_Asc.Clear();
                 for (int i = 0; i < Datas_Asc.Count; i++)
                 {
+
                     int idx_begin;
                     int idx_end;
                     int length;
@@ -1520,36 +1596,52 @@ namespace ATOToolDemo.ViewModel
                     catch { }
 
                     tempPara.Asc_Background = default;
+
                     Parames_Asc.Add(tempPara);
                 }
                 Vis_Save = Visibility.Visible;
                 Last_Ascidx = -1;
             }
-            catch { }
+            catch
+            {
+                MessageBox.Show("打开的文件格式不正确，请关闭软件重新读入正确文件！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
         private void save_AscNewFiles()
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "(*.txt)|*.txt";
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            MessageBox.Show("另存为TXT文件！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+            var saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "(*.txt)|*.txt";
+            saveFileDialog.DefaultExt = "txt";
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
+                //OpenFileDialog openFileDialog = new OpenFileDialog();
+                //openFileDialog.Filter = "(*.txt)|*.txt";
                 Save_NewDatas = new List<string>();
                 save_AscNewDatas();
-                string fileNames = openFileDialog.FileName;
+                string fileNames = saveFileDialog.FileName;
                 StreamWriter ascWrite = new StreamWriter(fileNames);
-                foreach (string item in Save_NewDatas)
+                try
                 {
-                    ascWrite.WriteLine(item);
+                    foreach (string item in Save_NewDatas)
+                    {
+                        ascWrite.WriteLine(item);
+                    }
+                }
+                catch 
+                {
+                    MessageBox.Show("请存在TXT文件！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 ascWrite.Close();
+                MessageBox.Show("保存完成！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
         private void save_AscNewDatas()
         {
             for (int i = 0; i < Datas_Asc.Count - 2; i++)
             {
-                string temp = Parames_Asc[i].Name + " + " + Parames_Asc[i].Data_Property + '<' + Parames_Asc[i].Range + '>'
-                    + Parames_Asc[i].Data + " @" + Parames_Asc[i].Tips;
+                string temp = Parames_Asc[i].Name + " = " + Parames_Asc[i].Data_Property + '<' + Parames_Asc[i].Range + '>'
+                    + Parames_Asc[i].Data + " @" + Parames_Asc[i].Tips + "\n";
                 Save_NewDatas.Add(temp);
             }
             Save_NewDatas.Add("#ATOEND");
@@ -1559,9 +1651,9 @@ namespace ATOToolDemo.ViewModel
 
         #endregion
 
-        public MainViewModel()  //ViewModel构造函数
+        public MainViewModel(double myheight)  //ViewModel构造函数
         {
-
+            this.Height = myheight;
             InitCommands();
             InitProperties();
         }

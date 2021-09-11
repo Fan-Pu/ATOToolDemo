@@ -24,14 +24,15 @@ namespace ATOToolDemo
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new MainViewModel();
-            
+            #region 启动时串口最大化显示
+            Rect rc = SystemParameters.WorkArea; //获取工作区大小
+            this.Left = 0; //设置位置
+            this.Top = 0;
+            this.Width = rc.Width;
+            this.Height = rc.Height;
+            #endregion
+            this.DataContext = new MainViewModel(rc.Height);
         }
-        //private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-
-        //}
-
         private void WatermarkComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
