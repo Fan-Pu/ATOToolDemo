@@ -22,6 +22,7 @@ namespace ATOToolDemo.ViewModel
                 RaisePropertyChanged();
             }
         }
+
         private string chartType;
         public string ChartType
         {
@@ -31,7 +32,6 @@ namespace ATOToolDemo.ViewModel
 
             }
         }
-
 
         private ObservableCollection<string> granularity;
         public ObservableCollection<string> Granularity
@@ -57,6 +57,15 @@ namespace ATOToolDemo.ViewModel
             }
         }
 
-      
+        private Granularity myGraItem;
+
+        public Granularity MyGraItem
+        {
+            get { return myGraItem; }
+            set { myGraItem = value;
+                RaisePropertyChanged();
+            }
+        }
+
     }
 }

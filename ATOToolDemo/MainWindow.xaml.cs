@@ -14,11 +14,18 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Forms;
+
 namespace ATOToolDemo
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
+    public enum Granularity { 正常, 扩大一倍, 缩小一倍 };
+    public class Customer
+    {
+        public Granularity myGra { get; set; }
+    }
+    
     public partial class MainWindow : Fluent.RibbonWindow
     {
         public MainWindow()
@@ -32,6 +39,8 @@ namespace ATOToolDemo
             this.Height = rc.Height;
             #endregion
             this.DataContext = new MainViewModel(rc.Height);
+            Customer cm = new Customer();
+            cm.myGra = Granularity.正常;
         }
         private void WatermarkComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

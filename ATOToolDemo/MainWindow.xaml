@@ -9,6 +9,7 @@
     xmlns:local="clr-namespace:ATOToolDemo"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:core="clr-namespace:System;assembly=mscorlib"
     xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
     Title="ATO调试工具"
     Width="1600"
@@ -18,6 +19,13 @@
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
     mc:Ignorable="d">
+    <Fluent:RibbonWindow.Resources>
+        <ObjectDataProvider x:Key="GraKey" MethodName="GetValues" ObjectType="{x:Type core:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type Type="local:Granularity"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Fluent:RibbonWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.2*" />
@@ -293,12 +301,19 @@
                                             <xctk:WatermarkComboBox 
                                                         Watermark="图像类型" 
                                                         Margin="0,0,5,0" 
-                                                        Width="100"
+                                                        Width="50"
                                                         Height="20"
                                                         ItemsSource="{Binding MySinChartTypes}" 
                                                         SelectedIndex="{Binding MySinChartTypesIdx}"
                                                         />
-                                            
+                                            <xctk:WatermarkComboBox 
+                                                        Watermark="时间粒度" 
+                                                        Margin="0,0,5,0" 
+                                                        Width="50"
+                                                        Height="20"
+                                                        ItemsSource="{Binding MySinGra}" 
+                                                        SelectedIndex="{Binding MySinGraIdx}"
+                                                        />
                                             <Button
                                         MinWidth="50"
                                         Margin="5"
@@ -412,7 +427,14 @@
                                                     MinWidth="70"
                                                     Binding="{Binding ChartType}"
                                                     Header="图像类型" />
-                                                <DataGridTemplateColumn
+
+                                                <DataGridComboBoxColumn Header="时间粒度"  
+                                                                        Width="auto"
+                                                                        MinWidth="130"
+                                                                        SelectedItemBinding="{Binding MyGraItem,Mode=TwoWay}" 
+                                                                        ItemsSource="{Binding Source={StaticResource GraKey}}" 
+                                                                        />
+                                                <!--<DataGridTemplateColumn
                                                     Width="*"
                                                     MinWidth="120"
                                                     Header="时间粒度">
@@ -424,8 +446,7 @@
                                                                       />
                                                         </DataTemplate>
                                                     </DataGridTemplateColumn.CellTemplate>
-                                                </DataGridTemplateColumn>
-
+                                                </DataGridTemplateColumn>-->
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </ScrollViewer>
