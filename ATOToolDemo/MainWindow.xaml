@@ -69,8 +69,8 @@
                                 Text="当前文件 " />
                             <xctk:WatermarkComboBox
                                 Height="21"
-                                Width="80"
-                                Margin="0,0,0,-0.025"
+                                Width="auto"
+                                
                                 VerticalAlignment="Top"
                                 ItemsSource="{Binding FileNames_Sim}"
                                 SelectedIndex="{Binding Curr_file_idx, Mode=TwoWay}"
@@ -183,7 +183,8 @@
                                 Text="当前文件"
                                 />
                             <xctk:WatermarkComboBox
-                                Width="80"
+                                Width="auto"
+                                
                                 ItemsSource="{Binding AscSimFileNames}"
                                 SelectedIndex="{Binding Curr_Ascfile_idx}"
                                 Watermark="选择文件" />
@@ -204,7 +205,10 @@
                         </StackPanel>
                     </Grid>
                 </Fluent:RibbonGroupBox>
-                <Fluent:RibbonGroupBox Header="文件状态">
+                <Fluent:RibbonGroupBox Header="文件状态"
+                                       Width="auto"
+                                       MinWidth="70"
+                                       >
                     <Grid Margin="5">
                         <Grid.RowDefinitions>
                             <RowDefinition />
@@ -213,7 +217,7 @@
                         <Border
                             Height="18"
                             Margin="5"
-                            Background="Green"
+                            Background="{Binding Background_Change}"
                             BorderBrush="Black"
                             BorderThickness="1"
                             Visibility="{Binding Vis_Change}">
@@ -223,7 +227,7 @@
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Foreground="White"
-                                Text="已修改"
+                                Text="{Binding Text_Change}"
                                 
                                 />
                         </Border>
@@ -231,18 +235,17 @@
                             Grid.Row="1"
                             Height="18"
                             Margin="5"
-                            Background="Red"
+                            Background="{Binding Background_Save}"
                             BorderBrush="Black"
                             BorderThickness="1"
                             Visibility="{Binding Vis_Save}"
-                            
                             >
                             <TextBlock
                                 Padding="5,0"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Foreground="White"
-                                Text="未保存"
+                                Text="{Binding Text_Save}"
                                 />
                         </Border>
                     </Grid>
@@ -293,7 +296,8 @@
                                             VerticalAlignment="Center"
                                             Text="文件: " />
                                                 <xctk:WatermarkComboBox
-                                            Width="80"
+                                            Width="auto"
+                                            MaxWidth="80"
                                             ItemsSource="{Binding FileNames_Sim}"
                                             SelectedIndex="{Binding Curr_fileSingle_idx}"
                                             Watermark="选择文件" />
@@ -301,7 +305,8 @@
                                             <xctk:WatermarkComboBox 
                                                         Watermark="图像类型" 
                                                         Margin="0,0,5,0" 
-                                                        Width="50"
+                                                        Width="auto"
+                                                        MaxWidth="50"
                                                         Height="20"
                                                         ItemsSource="{Binding MySinChartTypes}" 
                                                         SelectedIndex="{Binding MySinChartTypesIdx}"
@@ -309,7 +314,8 @@
                                             <xctk:WatermarkComboBox 
                                                         Watermark="时间粒度" 
                                                         Margin="0,0,5,0" 
-                                                        Width="50"
+                                                        Width="auto"
+                                                        MaxWidth="50"
                                                         Height="20"
                                                         ItemsSource="{Binding MySinGra}" 
                                                         SelectedIndex="{Binding MySinGraIdx}"
@@ -348,7 +354,8 @@
                                                 VerticalAlignment="Center"
                                                 Text="文件: " />
                                             <xctk:WatermarkComboBox
-                                                Width="80"
+                                                Width="auto"
+                                                MaxWidth="80"
                                                 ItemsSource="{Binding FileNames_Sim}"
                                                 SelectedIndex="{Binding Curr_fileMult_idx}"
                                                 SelectionChanged="WatermarkComboBox_SelectionChanged"
@@ -357,7 +364,8 @@
                                         <xctk:WatermarkComboBox 
                                                         Watermark="图像类型" 
                                                         Margin="0,0,5,0" 
-                                                        Width="100"
+                                                        Width="auto"
+                                                        MaxWidth="100"
                                                         Height="20"
                                                         ItemsSource="{Binding MyMultyChartTypes}" 
                                                         SelectedIndex="{Binding MyMultychartTypesIdx}"
@@ -404,7 +412,7 @@
                                             Command="{Binding AddLogFile}"
                                             Content="添加" />
                                         <!--<RadioButton GroupName="Second_Multy" Content="Status" Margin="5,5" Command="{Binding ChangeStatus}" IsChecked="{Binding MyChartTypes.IsStatusChanged}"/>
-                                                    <RadioButton GroupName="Third_Multy" Content="ACC" Margin="5,5" Command="{Binding ChangeAcc}" IsChecked="{Binding MyChartTypes.IsAccChanged}"/>--> 
+                                                    <RadioButton GroupName="Third_Multy" Content="ACC" Margin="5,5" Command="{Binding ChangeAcc}" IsChecked="{Binding MyChartTypes.IsAccChanged}"/>-->
                                     </StackPanel>
                                     <ScrollViewer Margin="0,5">
                                         <DataGrid
@@ -421,7 +429,7 @@
                                                     MinWidth="70"
                                                     Binding="{Binding FileName}"
                                                     Header="文件" />
-                                                
+
                                                 <DataGridTextColumn
                                                     Width="auto"
                                                     MinWidth="70"
@@ -475,7 +483,8 @@
                                                 VerticalAlignment="Center"
                                                 Text="文件: " />
                                             <xctk:WatermarkComboBox
-                                                Width="80"
+                                                Width="auto"
+                                                MaxWidth="80"
                                                 VerticalAlignment="Center"
                                                 ItemsSource="{Binding AscSimFileNames}"
                                                 SelectedIndex="{Binding Curr_Ascfile_idx}"
@@ -513,7 +522,7 @@
                                         <Border
                                             Height="18"
                                             Margin="5,0"
-                                            Background="Green"
+                                            Background="{Binding Background_Change}"
                                             BorderBrush="Black"
                                             BorderThickness="1"
                                             Visibility="{Binding Vis_Change}">
@@ -522,13 +531,13 @@
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 Foreground="White"
-                                                Text="已修改"
+                                                Text="{Binding Text_Change}"
                                                  />
                                         </Border>
                                         <Border
                                             Height="18"
                                             Margin="5,0"
-                                            Background="Red"
+                                            Background="{Binding Background_Save}"
                                             BorderBrush="Black"
                                             BorderThickness="1"
                                             Visibility="{Binding Vis_Save}"
@@ -538,7 +547,7 @@
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 Foreground="White"
-                                                Text="未保存"
+                                                Text="{Binding Text_Save}"
                                                 />
                                         </Border>
                                     </StackPanel>
@@ -612,7 +621,7 @@
                        VerticalAlignment="Top"
                        AutoGenerateColumns="False"
                        HorizontalScrollBarVisibility="Auto"
-                       ItemsSource="{Binding Parames_Asc, Mode=OneTime}"
+                       ItemsSource="{Binding ProcessedData_Asc, Mode=OneTime}" 
                        >
                     <DataGrid.Columns>
                         <DataGridTextColumn 
@@ -620,7 +629,8 @@
                             MinWidth="70"
                             Binding="{Binding Name,Mode=OneWay}"
                             Header="参数名" 
-                            IsReadOnly="True">
+                            IsReadOnly="True"
+                            >
                             <DataGridTextColumn.CellStyle>
                                 <Style TargetType="DataGridCell">
                                     <Setter Property="ToolTip" Value="{Binding Tips}" />
@@ -649,18 +659,18 @@
                     Grid.Column="1"
                     Width="5"
                     HorizontalAlignment="Center"
-                    Background="LightGray"
-                    Style="{StaticResource gridSplitterStyleForResizeColumns}" />
+                    Background="White"
+                    Style="{StaticResource gridSplitterStyleForResizeColumns}"/>
                 <DataGrid
                        Grid.Column="2"
                        Height="{Binding Height_Datagrid}"
                        VerticalAlignment="Top"
                        AutoGenerateColumns="False"
                        HorizontalScrollBarVisibility="Auto"
-                       ItemsSource="{Binding Parames_Asc, Mode=TwoWay}"
+                       ItemsSource="{Binding ProcessedData_Asc, Mode=TwoWay}"
                        SelectedIndex="{Binding Curr_Ascpara_idx,Mode=TwoWay}"
                        SelectedValue="{Binding AscData,Mode=TwoWay}"
-                       SelectedValuePath="Data"
+                       SelectedValuePath="Data" Grid.ColumnSpan="2" Margin="4.622,0,-0.404,0"
                        >
                     <DataGrid.Columns>
                         <DataGridTextColumn 
@@ -674,7 +684,6 @@
                                     <Setter Property="ToolTip" Value="{Binding Tips}" />
                                     <Setter Property="Background" Value="{Binding Asc_Background,Mode=TwoWay}"/>
                                     <Setter Property="Foreground" Value="Black"/>
-                                    
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>
@@ -688,21 +697,12 @@
                                 <Style TargetType="DataGridCell">
                                     <Setter Property="Background" Value="{Binding Asc_Background,Mode=TwoWay}"/>
                                     <Setter Property="Foreground" Value="Black"/>
-                                    
-                                    <!--<Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsDataChanged}" Value="true">
-                                            <Setter Property="Background" Value="Black"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding IsDataChanged}" Value="false">
-                                            <Setter Property="Background" Value="Green"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>-->
                                 </Style>
                             </DataGridTextColumn.CellStyle>
                         </DataGridTextColumn>
                         <DataGridTextColumn 
                             Width="auto"
-                            MinWidth="70"
+                            MinWidth="120"
                             Binding="{Binding Range,Mode=TwoWay}"
                             Header="取值范围" 
                             IsReadOnly="True">
@@ -737,7 +737,7 @@
                             <Border
                                 Height="18"
                                 Margin="5,0"
-                                Background="Green"
+                                Background="{Binding Background_Change}"
                                 BorderBrush="Black"
                                 BorderThickness="1"
                                 Visibility="{Binding Vis_Change}"
@@ -747,14 +747,14 @@
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Foreground="White"
-                                    Text="已修改"
+                                    Text="{Binding Text_Change}"
                                      
                                     />
                             </Border>
                             <Border
                                 Height="18"
                                 Margin="5,0"
-                                Background="Red"
+                                Background="{Binding Background_Save}"
                                 BorderBrush="Black"
                                 BorderThickness="1"
                                 Visibility="{Binding Vis_Save}"
@@ -764,7 +764,7 @@
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Foreground="White"
-                                    Text="未保存"
+                                    Text="{Binding Text_Save}"
                                     
                                     />
                             </Border>

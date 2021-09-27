@@ -1,9 +1,5 @@
 using GalaSoft.MvvmLight;
-using Fluent;
 using GalaSoft.MvvmLight.Command;
-using NPOI.HSSF.UserModel;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,7 +19,7 @@ using MessageBox = System.Windows.MessageBox;
 
 namespace ATOToolDemo.ViewModel
 {
-    
+
     public class MainViewModel : ViewModelBase
     {
         #region [properties]
@@ -593,24 +589,24 @@ namespace ATOToolDemo.ViewModel
             }
         }
 
-        private BindingList<string> data_Asc;
-        public BindingList<string> Datas_Asc
+        private BindingList<string> oriDatas_Asc;
+        public BindingList<string> OriDatas_Asc
         {
-            get { return data_Asc; }
+            get { return oriDatas_Asc; }
             set
             {
-                data_Asc = value;
+                oriDatas_Asc = value;
                 RaisePropertyChanged();
             }
         }
 
-        private BindingList<AscDatas> parames_Asc;
-        public BindingList<AscDatas> Parames_Asc
+        private BindingList<AscDatas> processedData_Asc;
+        public BindingList<AscDatas> ProcessedData_Asc
         {
-            get { return parames_Asc; }
+            get { return processedData_Asc; }
             set
             {
-                parames_Asc = value;
+                processedData_Asc = value;
                 RaisePropertyChanged();
 
             }
@@ -625,11 +621,11 @@ namespace ATOToolDemo.ViewModel
                 ascData = value;
                 if (Last_Ascidx != -1)
                 {
-                    if (Parames_Asc[Last_Ascidx].Data != Last_AscData)
+                    if (ProcessedData_Asc[Last_Ascidx].Data != Last_AscData)
                     {
-                        Vis_Change = Visibility.Visible;
-                        parames_Asc[Last_Ascidx].Asc_Background = new SolidColorBrush(Colors.GreenYellow);
-
+                        Background_Change.Color = Colors.Green;
+                        Text_Change = "已修改";
+                        ProcessedData_Asc[Last_Ascidx].Asc_Background = new SolidColorBrush(Colors.GreenYellow);
                     }
                 }
                 Last_Ascidx = Curr_Ascpara_idx;
@@ -718,6 +714,50 @@ namespace ATOToolDemo.ViewModel
             set
             {
                 vis_Save = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private string text_Save;
+        public string Text_Save
+        {
+            get { return text_Save; }
+            set
+            {
+                text_Save = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private SolidColorBrush background_Save;
+        public SolidColorBrush Background_Save
+        {
+            get { return background_Save; }
+            set
+            {
+                background_Save = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private string text_Change;
+        public string Text_Change
+        {
+            get { return text_Change; }
+            set
+            {
+                text_Change = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private SolidColorBrush background_Change;
+        public SolidColorBrush Background_Change
+        {
+            get { return background_Change; }
+            set
+            {
+                background_Change = value;
                 RaisePropertyChanged();
             }
         }
@@ -814,13 +854,15 @@ namespace ATOToolDemo.ViewModel
             FileNames = new ObservableCollection<string>();
             FileNames_Sim = new ObservableCollection<string>();
             LogFileProp_Mult = new BindingList<MultyTrainDataGrid>();
-            Parames_Asc = new BindingList<AscDatas>();
+            ProcessedData_Asc = new BindingList<AscDatas>();
             MyCharts = new BindingList<LiveChartParemeters>();
             MyMultyChartDatas = new BindingList<ChartDatas>();
             MyMultyChartTypes = new BindingList<string>() { "S-V图", "S-T图", "V-T图", "Status图", "ACC图", "不显示" };
             MySinChartTypes = new BindingList<string>() { "S-V图", "S-T图", "V-T图", "Status图", "ACC图", "不显示" };
             MySinGra = new BindingList<string>() { "正常", "扩大一倍", "缩小一倍" };
             Height_Datagrid = Height / 1.3;
+            Background_Save = new SolidColorBrush(Colors.Red);
+            Background_Change = new SolidColorBrush(Colors.Red);
 
             DateTime dt = DateTime.Now;
             NowTime = dt.ToLongDateString().ToString();
@@ -854,8 +896,6 @@ namespace ATOToolDemo.ViewModel
             Read_AscFiles = new RelayCommand(read_AscFiles);
             Show_AscDatas = new RelayCommand(show_AscDatas);
             Save_AscNewFiles = new RelayCommand(save_AscNewFiles);
-            //ChangeStatus = new RelayCommand(changeStatus);
-            //ChangeAcc = new RelayCommand(changeAcc);
         }  //初始化命令
 
         #region [文件操作]
@@ -864,9 +904,19 @@ namespace ATOToolDemo.ViewModel
             System.Windows.Forms.OpenFileDialog openfiledialog = new System.Windows.Forms.OpenFileDialog();
             if (openfiledialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
+                var ext_idx = openfiledialog.FileName.LastIndexOf(".") + 1;
+                var end_idx = openfiledialog.FileName.Length;
+                var ext = openfiledialog.FileName.Substring(ext_idx, end_idx - ext_idx);
+                if (ext != "xls" && ext != "xlsx")
+                {
+                    MessageBox.Show("请读取EXCEL文件！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
                 FileNames.Add(openfiledialog.FileName);
                 var start_idx = openfiledialog.FileName.LastIndexOf("\\") + 1;
                 FileNames_Sim.Add(openfiledialog.FileName.Substring(start_idx, openfiledialog.FileName.LastIndexOf(".") - start_idx));
+                MessageBox.Show("读取EXCEl文件成功", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+
             }
         }  //日志中读取文件
 
@@ -922,12 +972,20 @@ namespace ATOToolDemo.ViewModel
         private void addLogFile()
         {
             MultyTrainDataGrid propTmp = new MultyTrainDataGrid();
-            propTmp.FileName = FileNames_Sim[Curr_fileMult_idx];
-            propTmp.ChartType = MyMultyChartTypes[MyMultychartTypesIdx];
-            propTmp.Granularity = new ObservableCollection<string>() { "0.5倍", "1倍", "1.5倍" };
-            propTmp.MyGraItem = Granularity.正常;
-            propTmp.Gra_idx = -1;
-            LogFileProp_Mult.Add(propTmp);
+            try
+            {
+                propTmp.FileName = FileNames_Sim[Curr_fileMult_idx];
+                propTmp.ChartType = MyMultyChartTypes[MyMultychartTypesIdx];
+                propTmp.Granularity = new ObservableCollection<string>() { "0.5倍", "1倍", "1.5倍" };
+                propTmp.MyGraItem = Granularity.正常;
+                propTmp.Gra_idx = -1;
+                LogFileProp_Mult.Add(propTmp);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                MessageBox.Show("发生未知错误，请确认已选择好各项指标", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
 
         } //多列车
         private void showMultTrain()
@@ -998,7 +1056,7 @@ namespace ATOToolDemo.ViewModel
                         temp_Chart.Title_X = "Time"; temp_Chart.Title_Y = "TrainSpeed";
                         temp_Chart.Width_MyChart = max_time * 10 * Gra_Temp;
                         titleTemp = "V-T图";
-                        temp_Chart.MaxValue_MyChart = max*1.1;
+                        temp_Chart.MaxValue_MyChart = max * 1.1;
                         temp_Chart.Step_X = 5;
                         temp_Chart.Step_Y = max / 2;
                     }
@@ -1024,7 +1082,7 @@ namespace ATOToolDemo.ViewModel
                         temp_Chart.Title_X = "Time"; temp_Chart.Title_Y = "TrainPosition";
                         temp_Chart.Width_MyChart = max_time * 10 * Gra_Temp;
                         titleTemp = "S-T图";
-                        temp_Chart.MaxValue_MyChart = max*1.1;
+                        temp_Chart.MaxValue_MyChart = max * 1.1;
                         temp_Chart.Step_X = 5;
                         temp_Chart.Step_Y = max / 2;
                     }
@@ -1051,7 +1109,7 @@ namespace ATOToolDemo.ViewModel
                         temp_Chart.Title_X = "TrainPosition";
                         temp_Chart.Width_MyChart = max_position * 10 * Gra_Temp;
                         titleTemp = "S-V图";
-                        temp_Chart.MaxValue_MyChart = max*1.1;
+                        temp_Chart.MaxValue_MyChart = max * 1.1;
                         if (max_position > 20000)
                             temp_Chart.Step_X = (int)max_position / 1000;
                         else
@@ -1166,9 +1224,9 @@ namespace ATOToolDemo.ViewModel
                             Y = TempChartData.TargetAcc[i],
                         });
                     }
-                    temp_Chart.MaxValue_MyChart = max*1.1;
+                    temp_Chart.MaxValue_MyChart = max * 1.1;
                     temp_Chart.Height_MyChart = Height / 2.7;
-                    temp_Chart.MinValue_MyChart = min*1.1;
+                    temp_Chart.MinValue_MyChart = min * 1.1;
                     temp_Chart.Width_MyChart = max_position * 20 * Gra_Temp;
                     if (max_position > 20000)
                         temp_Chart.Step_X = (int)max_position / 1000;
@@ -1224,7 +1282,7 @@ namespace ATOToolDemo.ViewModel
             }
             catch
             {
-                ;
+                MessageBox.Show("发生未知错误，请确认已选择好各项指标", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
         }
@@ -1242,8 +1300,7 @@ namespace ATOToolDemo.ViewModel
             }
             catch
             {
-
-
+                MessageBox.Show("发生未知错误，请确认已选择好各项指标", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
         private void moveUp()
@@ -1260,16 +1317,20 @@ namespace ATOToolDemo.ViewModel
             }
             catch
             {
-
-
+                MessageBox.Show("发生未知错误，请确认已选择好各项指标", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
-       
+
         #endregion
 
         #region [单列车函数]
         private void showSingleTrain()
         {
+            if (MySinChartDatass == null)
+            {
+                MessageBox.Show("发生未知错误，请确认已选择好文件名", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
             string thisTemp = "";
             string thisGra = " ";
             try { thisTemp = MySinChartTypes[MySinChartTypesIdx]; }
@@ -1285,11 +1346,11 @@ namespace ATOToolDemo.ViewModel
                 return;
             }
             double times = 1.0;
-            if(thisGra == "扩大一倍")
+            if (thisGra == "扩大一倍")
             {
                 times = 2.0;
             }
-            else if(thisGra == "缩小一倍")
+            else if (thisGra == "缩小一倍")
             {
                 times = 0.5;
             }
@@ -1334,6 +1395,7 @@ namespace ATOToolDemo.ViewModel
                 else if (thisTemp == "S-T图")
                 {
                     double max_time = 0;
+
                     for (int i = 0; i < MySinChartDatass.TrainPosition.Count; i++)
                     {
                         valuesTemp.Add(new MeasureModel
@@ -1354,7 +1416,7 @@ namespace ATOToolDemo.ViewModel
                     temp_Chart.Title_Y = "TrainPosition";
                     temp_Chart.Width_MyChart = max_time * 10 * times;
                     titleTemp = "S-T图";
-                    temp_Chart.MaxValue_MyChart = max *1.08;
+                    temp_Chart.MaxValue_MyChart = max * 1.08;
                     temp_Chart.Step_X = 5;
                     temp_Chart.Step_Y = max / 10;
                 }
@@ -1547,15 +1609,22 @@ namespace ATOToolDemo.ViewModel
         #region[ASC]
         private void read_AscFiles()
         {
-            MessageBox.Show("请读取TXT文件！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+
             System.Windows.Forms.OpenFileDialog openfiledialog = new System.Windows.Forms.OpenFileDialog();
             if (openfiledialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
+                var ext_idx = openfiledialog.FileName.LastIndexOf(".") + 1;
+                var ext = openfiledialog.FileName.Substring(ext_idx, 3);
                 AscFileNames.Add(openfiledialog.FileName);
+                if (ext != "txt")
+                {
+                    MessageBox.Show("请读取TXT文件！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
                 var start_idx = openfiledialog.FileName.LastIndexOf("\\") + 1;
                 AscSimFileNames.Add(openfiledialog.FileName.Substring(start_idx, openfiledialog.FileName.LastIndexOf(".") - start_idx));
                 Curr_Ascpara_idx = -1;
-                MessageBox.Show("读取成功！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("读取TXT文件成功！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
         }
@@ -1563,7 +1632,7 @@ namespace ATOToolDemo.ViewModel
         {
             try
             {
-                Datas_Asc = new BindingList<string>();
+                OriDatas_Asc = new BindingList<string>();
                 using (StreamReader read_Asc = new StreamReader(AscFileNames[Curr_Ascfile_idx], Encoding.Default))
                 {
                     int lineCount = 0;
@@ -1572,18 +1641,18 @@ namespace ATOToolDemo.ViewModel
                         lineCount++;
                         string temp = read_Asc.ReadLine();
                         if (!temp.Contains("#"))
-                            Datas_Asc.Add(temp);
+                            OriDatas_Asc.Add(temp);
                     }
                 }
-                parames_Asc.Clear();
-                for (int i = 0; i < Datas_Asc.Count; i++)
+                ProcessedData_Asc.Clear();
+                for (int i = 0; i < OriDatas_Asc.Count; i++)
                 {
 
                     int idx_begin;
                     int idx_end;
                     int length;
                     AscDatas tempPara = new AscDatas();
-                    string temp = Datas_Asc[i];
+                    string temp = OriDatas_Asc[i];
 
                     idx_end = temp.IndexOf("=");
                     tempPara.Name = temp.Substring(0, idx_end).TrimEnd();
@@ -1611,55 +1680,72 @@ namespace ATOToolDemo.ViewModel
 
                     tempPara.Asc_Background = default;
 
-                    Parames_Asc.Add(tempPara);
+                    ProcessedData_Asc.Add(tempPara);
                 }
                 Vis_Save = Visibility.Visible;
+                Text_Save = "未保存";
+                Background_Save.Color = Colors.Red;
+                Vis_Change = Visibility.Visible;
+                Text_Change = "未修改";
+                Background_Change.Color = Colors.Red;
                 Last_Ascidx = -1;
             }
             catch
             {
-                MessageBox.Show("打开的文件格式不正确，请关闭软件重新读入正确文件！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("发生未知错误，请确认已选择文件！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
         private void save_AscNewFiles()
         {
-            MessageBox.Show("另存为TXT文件！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
-            var saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "(*.txt)|*.txt";
-            saveFileDialog.DefaultExt = "txt";
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            try
             {
-                //OpenFileDialog openFileDialog = new OpenFileDialog();
-                //openFileDialog.Filter = "(*.txt)|*.txt";
-                Save_NewDatas = new List<string>();
-                save_AscNewDatas();
-                string fileNames = saveFileDialog.FileName;
-                StreamWriter ascWrite = new StreamWriter(fileNames);
-                try
+                var saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "(*.txt)|*.txt";
+                saveFileDialog.DefaultExt = "txt";
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
+                    Save_NewDatas = new List<string>();
+                    if (save_AscNewDatas() == false)
+                    {
+                        return;
+                    }
+                    string fileNames = saveFileDialog.FileName;
+                    StreamWriter ascWrite = new StreamWriter(fileNames);
                     foreach (string item in Save_NewDatas)
                     {
                         ascWrite.WriteLine(item);
                     }
+                    ascWrite.Close();
+                    Background_Save.Color = Colors.Green;
+                    Text_Save = "已保存";
+                    MessageBox.Show("保存完成！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-                catch 
-                {
-                    MessageBox.Show("请存在TXT文件！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                ascWrite.Close();
-                MessageBox.Show("保存完成！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-        }
-        private void save_AscNewDatas()
-        {
-            for (int i = 0; i < Datas_Asc.Count - 2; i++)
+            catch
             {
-                string temp = Parames_Asc[i].Name + " = " + Parames_Asc[i].Data_Property + '<' + Parames_Asc[i].Range + '>'
-                    + Parames_Asc[i].Data + " @" + Parames_Asc[i].Tips + "\n";
+                MessageBox.Show("发生未知错误，请确认另存为TXT文件", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+
+        }
+        private bool save_AscNewDatas()
+        {
+
+            if (OriDatas_Asc == null || OriDatas_Asc.Count == 0)
+            {
+                MessageBox.Show("没有要保存的ASC数据！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+                return false;
+            }
+
+            for (int i = 0; i < OriDatas_Asc.Count - 2; i++)
+            {
+                string temp = ProcessedData_Asc[i].Name + " = " + ProcessedData_Asc[i].Data_Property + '<' + ProcessedData_Asc[i].Range + '>'
+                    + ProcessedData_Asc[i].Data + " @" + ProcessedData_Asc[i].Tips;
                 Save_NewDatas.Add(temp);
             }
             Save_NewDatas.Add("#ATOEND");
             Save_NewDatas.Insert(0, "#ATO");
+            return true;
         }
         #endregion
 
