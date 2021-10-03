@@ -56,6 +56,17 @@ namespace ATOToolDemo.ViewModel
                 
             }
         }
+        private int number;
+        public int Number
+        {
+            get { return number; }
+            set
+            {
+                number = value;
+                RaisePropertyChanged();
+
+            }
+        }
 
         private Granularity myGraItem;
 

@@ -400,6 +400,16 @@ namespace ATOToolDemo.ViewModel
                 RaisePropertyChanged();
             }
         }
+
+        private int trainNumber;
+        public int TrainNumber
+        {
+            get { return trainNumber; }
+            set { trainNumber = value;
+                RaisePropertyChanged();
+            }
+        }
+
         #endregion
 
         #region [评价指标属性]
@@ -696,28 +706,6 @@ namespace ATOToolDemo.ViewModel
             }
         }
 
-        private Visibility vis_Change;
-        public Visibility Vis_Change
-        {
-            get { return vis_Change; }
-            set
-            {
-                vis_Change = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        private Visibility vis_Save;
-        public Visibility Vis_Save
-        {
-            get { return vis_Save; }
-            set
-            {
-                vis_Save = value;
-                RaisePropertyChanged();
-            }
-        }
-
         private string text_Save;
         public string Text_Save
         {
@@ -788,6 +776,32 @@ namespace ATOToolDemo.ViewModel
 
         #endregion
 
+        #region[文件缓存区]
+        private BindingList<FileCache> myCache;
+        public BindingList<FileCache> MyCache
+        {
+            get
+            {
+                return myCache;
+            }
+            set
+            {
+                myCache = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private int myCache_Idx;
+        public int MyCache_Idx
+        {
+            get { return myCache_Idx; }
+            set
+            {
+                myCache_Idx = value;
+                RaisePropertyChanged();
+            }
+        }
+        #endregion
         #endregion
 
         #region [private properties]
@@ -817,13 +831,13 @@ namespace ATOToolDemo.ViewModel
         #region [文件操作命令]
         public RelayCommand SaveLogFileToExcelCommand { get; set; }  //另存为excel
         public RelayCommand ReadLogFilesCommand { get; set; } //日志读取文件
-
-        public RelayCommand Read_AscFiles { get; set; }
+        public RelayCommand DeleteFileCache { get; set; }
         #endregion
 
         #region [单列车命令]
         public RelayCommand ShowSingleTrain { get; set; }
 
+        public RelayCommand ShowSinTrainRadio { get; set; }
         #endregion
 
         #region [多列车命令]
@@ -833,12 +847,14 @@ namespace ATOToolDemo.ViewModel
         public RelayCommand MoveUp { get; set; }
         public RelayCommand MoveDown { get; set; }
         public RelayCommand UpdataMultTrain { get; set; }
+        public RelayCommand ShowMulTrainRadio { get; set; }
         //public RelayCommand ChangeStatus { get; set; }
         //public RelayCommand ChangeAcc { get; set; }
 
         #endregion
 
         #region [ASC]
+        public RelayCommand Read_AscFiles { get; set; }
         public RelayCommand Show_AscDatas { get; set; }
 
         public RelayCommand Save_AscNewFiles { get; set; }
@@ -863,16 +879,19 @@ namespace ATOToolDemo.ViewModel
             Height_Datagrid = Height / 1.3;
             Background_Save = new SolidColorBrush(Colors.Red);
             Background_Change = new SolidColorBrush(Colors.Red);
+            myCache = new BindingList<FileCache>();
 
             DateTime dt = DateTime.Now;
             NowTime = dt.ToLongDateString().ToString();
+            text_Change = "未修改";
+            text_Save = "未保存";
 
-            Vis_Change = Visibility.Hidden;
-            vis_Save = Visibility.Hidden;
 
             Curr_file_idx = -1;
             Curr_train_idx = -1;
+            TrainNumber = 0;
 
+            MyCache_Idx = -1;
             Curr_fileMult_idx = -1;
             Curr_fileSingle_idx = -1;
             Curr_trainSingle_idx = -1;
@@ -896,12 +915,17 @@ namespace ATOToolDemo.ViewModel
             Read_AscFiles = new RelayCommand(read_AscFiles);
             Show_AscDatas = new RelayCommand(show_AscDatas);
             Save_AscNewFiles = new RelayCommand(save_AscNewFiles);
+            ShowMulTrainRadio = new RelayCommand(showMulTrainRadio);
+            ShowSinTrainRadio = new RelayCommand(showSinTrainRadio);
+            DeleteFileCache = new RelayCommand(deleteFileCache);
         }  //初始化命令
 
         #region [文件操作]
         private void readLogFiles()
         {
             System.Windows.Forms.OpenFileDialog openfiledialog = new System.Windows.Forms.OpenFileDialog();
+            openfiledialog.Filter = "(*.xls)|*.xls|(*.xlsx)|*.xlsx";
+            openfiledialog.DefaultExt = "xls|xlsx";
             if (openfiledialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 var ext_idx = openfiledialog.FileName.LastIndexOf(".") + 1;
@@ -909,46 +933,90 @@ namespace ATOToolDemo.ViewModel
                 var ext = openfiledialog.FileName.Substring(ext_idx, end_idx - ext_idx);
                 if (ext != "xls" && ext != "xlsx")
                 {
-                    MessageBox.Show("请读取EXCEL文件！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("读取文件失败！请读取正确格式的EXCEL文件！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
                 FileNames.Add(openfiledialog.FileName);
                 var start_idx = openfiledialog.FileName.LastIndexOf("\\") + 1;
-                FileNames_Sim.Add(openfiledialog.FileName.Substring(start_idx, openfiledialog.FileName.LastIndexOf(".") - start_idx));
+                string SimName = openfiledialog.FileName.Substring(start_idx, openfiledialog.FileName.LastIndexOf(".") - start_idx);
+                FileNames_Sim.Add(SimName);
+                FileCache temp = new FileCache();
+                temp.FileName = SimName;
+                temp.FileType = "日志文件";
+                myCache.Add(temp);
                 MessageBox.Show("读取EXCEl文件成功", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
 
             }
         }  //日志中读取文件
-
         private void saveLogFileToExcelCommand()
         {
             System.Windows.Forms.SaveFileDialog saveFileDialog = new SaveFileDialog();
             string temp_fileNames = "";
+            saveFileDialog.Filter = "(*.xls)|*.xls|(*.xlsx)|*.xlsx";
+            saveFileDialog.DefaultExt = "xls|xlsx";
             if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                saveFileDialog.Filter = "(*.xlms)|*.xlms";
                 temp_fileNames = saveFileDialog.FileName;
             }
             ExcelHelper excel_create = new ExcelHelper(temp_fileNames);
             DataTable data_New = new DataTable();
-            for (int i = 0; i <= 7; i++)
+            if (Data == null)
             {
-                data_New.Columns.Add(new DataColumn(Data.Rows[0][i].ToString(), typeof(string)));
+                MessageBox.Show("发生未知错误，请确认要保存的数据存在", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
-            DataRow datarow_tmp;
-            for (int i = 1; i < Data.Rows.Count; i++)
+
+            try
             {
-                datarow_tmp = data_New.NewRow();
-                for (int j = 0; j <= 7; j++)
+                for (int i = 0; i <= 7; i++)
                 {
-                    datarow_tmp[Data.Rows[0][j].ToString()] = Data.Rows[i][j].ToString();
+                    data_New.Columns.Add(new DataColumn(Data.Rows[0][i].ToString(), typeof(string)));
                 }
-                data_New.Rows.Add(datarow_tmp);
+                DataRow datarow_tmp;
+                for (int i = 1; i < Data.Rows.Count; i++)
+                {
+                    datarow_tmp = data_New.NewRow();
+                    for (int j = 0; j <= 7; j++)
+                    {
+                        datarow_tmp[Data.Rows[0][j].ToString()] = Data.Rows[i][j].ToString();
+                    }
+                    data_New.Rows.Add(datarow_tmp);
+                }
+
+                excel_create.DataTableToExcel(data_New, "sheet1", true);
             }
-            excel_create.DataTableToExcel(data_New, "sheet1", true);
+            catch
+            {
+                MessageBox.Show("发生未知错误，请确认另存为正确格式的EXCEL文件", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
         } // 另存为excel文件
 
+        private void deleteFileCache()
+        {
+            try
+            {
+                if (myCache[MyCache_Idx].FileType == "ASC文件")
+                {
+                    string filename = myCache[MyCache_Idx].FileName; 
+                    AscSimFileNames.Remove(filename);
+                    AscFileNames.Remove(filename);
+                    MyCache.RemoveAt(MyCache_Idx);
+                }
+                else
+                {
+                    string filename = myCache[MyCache_Idx].FileName;
+                    FileNames_Sim.Remove(filename);
+                    FileNames.Remove(filename);
+                    MyCache.RemoveAt(MyCache_Idx);
+                }
+            }
+            catch
+            {
+                MessageBox.Show("删除文件失败！请确认是否选中对应文件！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
         #endregion
 
         #region [评价指标]
@@ -979,11 +1047,18 @@ namespace ATOToolDemo.ViewModel
                 propTmp.Granularity = new ObservableCollection<string>() { "0.5倍", "1倍", "1.5倍" };
                 propTmp.MyGraItem = Granularity.正常;
                 propTmp.Gra_idx = -1;
+                if (LogFileProp_Mult.Count + 1 > TrainNumber)
+                {
+                    TrainNumber = LogFileProp_Mult.Count + 1;
+                }
+                else
+                    TrainNumber++;
+                propTmp.Number = TrainNumber;
                 LogFileProp_Mult.Add(propTmp);
             }
             catch (ArgumentOutOfRangeException)
             {
-                MessageBox.Show("发生未知错误，请确认已选择好各项指标", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("发生未知错误，请确认已选择好各项指标", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
 
@@ -1007,7 +1082,7 @@ namespace ATOToolDemo.ViewModel
                 }
                 catch
                 {
-                    MessageBox.Show("您尚未选择图像类型！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("您尚未选择图像类型！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
                 ChartDatas TempChartData = new ChartDatas();
@@ -1282,7 +1357,7 @@ namespace ATOToolDemo.ViewModel
             }
             catch
             {
-                MessageBox.Show("发生未知错误，请确认已选择好各项指标", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("发生未知错误，请确认已选择好各项指标", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
         }
@@ -1300,7 +1375,7 @@ namespace ATOToolDemo.ViewModel
             }
             catch
             {
-                MessageBox.Show("发生未知错误，请确认已选择好各项指标", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("发生未知错误，请确认已选择好各项指标", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private void moveUp()
@@ -1317,13 +1392,26 @@ namespace ATOToolDemo.ViewModel
             }
             catch
             {
-                MessageBox.Show("发生未知错误，请确认已选择好各项指标", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("发生未知错误，请确认已选择好各项指标", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
+        private void showMulTrainRadio()
+        {
+            if(MyCharts!=null)
+            {
+                MyCharts.Clear();
+            }
+        }
         #endregion
 
         #region [单列车函数]
+        private void showSinTrainRadio()
+        {
+            if (MyCharts != null)
+            {
+                MyCharts.Clear();
+            }
+        }
         private void showSingleTrain()
         {
             if (MySinChartDatass == null)
@@ -1611,22 +1699,28 @@ namespace ATOToolDemo.ViewModel
         {
 
             System.Windows.Forms.OpenFileDialog openfiledialog = new System.Windows.Forms.OpenFileDialog();
+            openfiledialog.Filter = "(*.txt)|*.txt";
+            openfiledialog.DefaultExt = "txt";
             if (openfiledialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 var ext_idx = openfiledialog.FileName.LastIndexOf(".") + 1;
                 var ext = openfiledialog.FileName.Substring(ext_idx, 3);
                 AscFileNames.Add(openfiledialog.FileName);
+                
                 if (ext != "txt")
                 {
-                    MessageBox.Show("请读取TXT文件！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("请读取TXT文件！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
                 var start_idx = openfiledialog.FileName.LastIndexOf("\\") + 1;
                 AscSimFileNames.Add(openfiledialog.FileName.Substring(start_idx, openfiledialog.FileName.LastIndexOf(".") - start_idx));
                 Curr_Ascpara_idx = -1;
+                FileCache temp = new FileCache();
+                temp.FileName = openfiledialog.FileName.Substring(start_idx, openfiledialog.FileName.LastIndexOf(".") - start_idx);
+                temp.FileType = "ASC文件";
+                myCache.Add(temp);
                 MessageBox.Show("读取TXT文件成功！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-
         }
         private void show_AscDatas()
         {
@@ -1682,17 +1776,15 @@ namespace ATOToolDemo.ViewModel
 
                     ProcessedData_Asc.Add(tempPara);
                 }
-                Vis_Save = Visibility.Visible;
                 Text_Save = "未保存";
                 Background_Save.Color = Colors.Red;
-                Vis_Change = Visibility.Visible;
                 Text_Change = "未修改";
                 Background_Change.Color = Colors.Red;
                 Last_Ascidx = -1;
             }
             catch
             {
-                MessageBox.Show("发生未知错误，请确认已选择文件！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("发生未知错误，请确认已选择文件！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private void save_AscNewFiles()
@@ -1723,7 +1815,7 @@ namespace ATOToolDemo.ViewModel
             }
             catch
             {
-                MessageBox.Show("发生未知错误，请确认另存为TXT文件", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("发生未知错误，请确认另存为TXT文件", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
 
@@ -1733,7 +1825,7 @@ namespace ATOToolDemo.ViewModel
 
             if (OriDatas_Asc == null || OriDatas_Asc.Count == 0)
             {
-                MessageBox.Show("没有要保存的ASC数据！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("没有要保存的ASC数据！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
 

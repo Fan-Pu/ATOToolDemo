@@ -163,6 +163,7 @@
     </ApplicationDefinition>
     <Compile Include="Model\AscDatas.cs" />
     <Compile Include="Model\ExcelHelper.cs" />
+    <Compile Include="Model\FileCache.cs" />
     <Compile Include="Model\LiveChartParemeters.cs" />
     <Compile Include="Model\MultyTrainDataGrid.cs" />
     <Compile Include="Model\ChartDatas.cs" />
