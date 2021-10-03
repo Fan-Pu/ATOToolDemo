@@ -873,8 +873,8 @@ namespace ATOToolDemo.ViewModel
             ProcessedData_Asc = new BindingList<AscDatas>();
             MyCharts = new BindingList<LiveChartParemeters>();
             MyMultyChartDatas = new BindingList<ChartDatas>();
-            MyMultyChartTypes = new BindingList<string>() { "S-VÕº", "S-TÕº", "V-TÕº", "StatusÕº", "ACCÕº", "≤ªœ‘ æ" };
-            MySinChartTypes = new BindingList<string>() { "S-VÕº", "S-TÕº", "V-TÕº", "StatusÕº", "ACCÕº", "≤ªœ‘ æ" };
+            MyMultyChartTypes = new BindingList<string>() { "S-VÕº", "T-SÕº", "T-VÕº", "StatusÕº", "ACCÕº", "≤ªœ‘ æ" };
+            MySinChartTypes = new BindingList<string>() { "S-VÕº", "T-SÕº", "T-VÕº", "StatusÕº", "ACCÕº", "≤ªœ‘ æ" };
             MySinGra = new BindingList<string>() { "’˝≥£", "¿©¥Û“ª±∂", "Àı–°“ª±∂" };
             Height_Datagrid = Height / 1.3;
             Background_Save = new SolidColorBrush(Colors.Red);
@@ -1098,7 +1098,7 @@ namespace ATOToolDemo.ViewModel
 
                 if (thisTemp == "≤ªœ‘ æ")
                     continue;
-                if (thisTemp == "V-TÕº" || thisTemp == "S-TÕº" || thisTemp == "S-VÕº")
+                if (thisTemp == "T-VÕº" || thisTemp == "T-SÕº" || thisTemp == "S-VÕº")
                 {
                     LiveChartParemeters temp_Chart = new LiveChartParemeters();
                     var mapper = Mappers.Xy<MeasureModel>()
@@ -1108,7 +1108,7 @@ namespace ATOToolDemo.ViewModel
                     ChartValues<MeasureModel> valuesTemp = new ChartValues<MeasureModel>();
                     string titleTemp = "";
                     double max = 0;
-                    if (thisTemp == "V-TÕº")
+                    if (thisTemp == "T-VÕº")
                     {
                         double max_time = 0;
                         for (int i = 0; i < TempChartData.Speed.Count; i++)
@@ -1130,12 +1130,12 @@ namespace ATOToolDemo.ViewModel
                         }
                         temp_Chart.Title_X = "Time"; temp_Chart.Title_Y = "TrainSpeed";
                         temp_Chart.Width_MyChart = max_time * 10 * Gra_Temp;
-                        titleTemp = "V-TÕº";
+                        titleTemp = "T-VÕº";
                         temp_Chart.MaxValue_MyChart = max * 1.1;
                         temp_Chart.Step_X = 5;
                         temp_Chart.Step_Y = max / 2;
                     }
-                    if (thisTemp == "S-TÕº")
+                    if (thisTemp == "T-SÕº")
                     {
                         double max_time = 0;
                         for (int i = 0; i < TempChartData.TrainPosition.Count; i++)
@@ -1156,7 +1156,7 @@ namespace ATOToolDemo.ViewModel
                         }
                         temp_Chart.Title_X = "Time"; temp_Chart.Title_Y = "TrainPosition";
                         temp_Chart.Width_MyChart = max_time * 10 * Gra_Temp;
-                        titleTemp = "S-TÕº";
+                        titleTemp = "T-SÕº";
                         temp_Chart.MaxValue_MyChart = max * 1.1;
                         temp_Chart.Step_X = 5;
                         temp_Chart.Step_Y = max / 2;
@@ -1443,7 +1443,7 @@ namespace ATOToolDemo.ViewModel
                 times = 0.5;
             }
             MyCharts.Clear();
-            if (thisTemp == "V-TÕº" || thisTemp == "S-TÕº" || thisTemp == "S-VÕº")
+            if (thisTemp == "T-VÕº" || thisTemp == "T-SÕº" || thisTemp == "S-VÕº")
             {
                 LiveChartParemeters temp_Chart = new LiveChartParemeters();
                 var mapper = Mappers.Xy<MeasureModel>()
@@ -1453,7 +1453,7 @@ namespace ATOToolDemo.ViewModel
                 ChartValues<MeasureModel> valuesTemp = new ChartValues<MeasureModel>();
                 string titleTemp = "";
                 double max = 0;
-                if (thisTemp == "V-TÕº")
+                if (thisTemp == "T-VÕº")
                 {
                     double max_time = 0;
                     for (int i = 0; i < MySinChartDatass.Speed.Count; i++)
@@ -1475,12 +1475,12 @@ namespace ATOToolDemo.ViewModel
                     temp_Chart.Title_X = "Time";
                     temp_Chart.Title_Y = "TrainSpeed";
                     temp_Chart.Width_MyChart = max_time * 10 * times;
-                    titleTemp = "V-TÕº";
+                    titleTemp = "T-VÕº";
                     temp_Chart.MaxValue_MyChart = max * 1.08;
                     temp_Chart.Step_X = 5;
                     temp_Chart.Step_Y = max / 10;
                 }
-                else if (thisTemp == "S-TÕº")
+                else if (thisTemp == "T-SÕº")
                 {
                     double max_time = 0;
 
@@ -1503,7 +1503,7 @@ namespace ATOToolDemo.ViewModel
                     temp_Chart.Title_X = "Time";
                     temp_Chart.Title_Y = "TrainPosition";
                     temp_Chart.Width_MyChart = max_time * 10 * times;
-                    titleTemp = "S-TÕº";
+                    titleTemp = "T-SÕº";
                     temp_Chart.MaxValue_MyChart = max * 1.08;
                     temp_Chart.Step_X = 5;
                     temp_Chart.Step_Y = max / 10;
