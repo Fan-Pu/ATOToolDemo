@@ -27,7 +27,9 @@ namespace ATOToolDemo.ViewModel
         public string ChartType
         {
             get { return chartType; }
-            set { chartType = value;
+            set
+            {
+                chartType = value;
                 RaisePropertyChanged();
 
             }
@@ -53,7 +55,7 @@ namespace ATOToolDemo.ViewModel
             {
                 gra_idx = value;
                 RaisePropertyChanged();
-                
+
             }
         }
         private int number;
@@ -73,7 +75,9 @@ namespace ATOToolDemo.ViewModel
         public Granularity MyGraItem
         {
             get { return myGraItem; }
-            set { myGraItem = value;
+            set
+            {
+                myGraItem = value;
                 RaisePropertyChanged();
             }
         }

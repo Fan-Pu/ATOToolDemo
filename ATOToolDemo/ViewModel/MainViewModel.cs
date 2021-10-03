@@ -405,7 +405,9 @@ namespace ATOToolDemo.ViewModel
         public int TrainNumber
         {
             get { return trainNumber; }
-            set { trainNumber = value;
+            set
+            {
+                trainNumber = value;
                 RaisePropertyChanged();
             }
         }
@@ -999,7 +1001,7 @@ namespace ATOToolDemo.ViewModel
             {
                 if (myCache[MyCache_Idx].FileType == "ASC文件")
                 {
-                    string filename = myCache[MyCache_Idx].FileName; 
+                    string filename = myCache[MyCache_Idx].FileName;
                     AscSimFileNames.Remove(filename);
                     AscFileNames.Remove(filename);
                     MyCache.RemoveAt(MyCache_Idx);
@@ -1397,7 +1399,7 @@ namespace ATOToolDemo.ViewModel
         }
         private void showMulTrainRadio()
         {
-            if(MyCharts!=null)
+            if (MyCharts != null)
             {
                 MyCharts.Clear();
             }
@@ -1706,7 +1708,7 @@ namespace ATOToolDemo.ViewModel
                 var ext_idx = openfiledialog.FileName.LastIndexOf(".") + 1;
                 var ext = openfiledialog.FileName.Substring(ext_idx, 3);
                 AscFileNames.Add(openfiledialog.FileName);
-                
+
                 if (ext != "txt")
                 {
                     MessageBox.Show("请读取TXT文件！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);

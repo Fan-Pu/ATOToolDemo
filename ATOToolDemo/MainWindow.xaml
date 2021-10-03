@@ -473,7 +473,7 @@
                                             Style="{StaticResource gridSplitterStyleForResizeRows}"
                                             />
                                     </Grid>
-        <!--</ScrollViewer>-->
+                                    <!--</ScrollViewer>-->
                                 </StackPanel>
                             </GroupBox>
                         </StackPanel>

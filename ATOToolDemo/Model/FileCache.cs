@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ATOToolDemo.Model
 {
-    public class FileCache:ViewModelBase
+    public class FileCache : ViewModelBase
     {
         private string fileName; //文件名
         public string FileName
