@@ -20,7 +20,7 @@ namespace ATOToolDemo
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public enum Granularity { 正常, 扩大一倍, 缩小一倍 };
+    public enum Granularity { 正常, 扩大一倍, 缩小一倍,自适应 };
     public class Customer
     {
         public Granularity myGra { get; set; }
@@ -38,7 +38,7 @@ namespace ATOToolDemo
             this.Width = rc.Width;
             this.Height = rc.Height;
             #endregion
-            this.DataContext = new MainViewModel(rc.Height);
+            this.DataContext = new MainViewModel(rc.Height,rc.Width);
             Customer cm = new Customer();
             cm.myGra = Granularity.正常;
         }

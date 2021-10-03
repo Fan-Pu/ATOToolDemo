@@ -110,7 +110,15 @@ namespace ATOToolDemo.ViewModel
                 RaisePropertyChanged();
             }
         }
-        
+        private bool isShowLabels;
+        public bool IsShowLabels
+        {
+            get { return isShowLabels; }
+            set { isShowLabels = value;
+                RaisePropertyChanged();
+            }
+        }
+
 
 
     }

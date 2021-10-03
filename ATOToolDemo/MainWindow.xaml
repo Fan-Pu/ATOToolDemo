@@ -253,7 +253,7 @@
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="2*" />
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition Width="4*" />
                 <ColumnDefinition Width="5" />
@@ -641,7 +641,10 @@
                                         ScrollBarFill="Transparent" 
                                         LegendLocation="None">
                                             <lvc:CartesianChart.AxisX>
-                                                <lvc:Axis Title="{Binding Title_X}">
+                                                <lvc:Axis Title="{Binding Title_X}"
+                                                          Foreground="Black"
+                                                          ShowLabels="{Binding IsShowLabels}"
+                                                          >
                                                     <lvc:Axis.Separator>
                                                         <lvc:Separator Step="{Binding Step_X}"/>
                                                     </lvc:Axis.Separator>
@@ -652,6 +655,8 @@
                                                           MinValue="{Binding MinValue_MyChart}" 
                                                           Title="{Binding Title_Y}"
                                                           Labels="{Binding Label_Y}"
+                                                          Foreground="Black"
+                                                          ShowLabels="True"
                                                           >
                                                     <lvc:Axis.Separator>
                                                         <lvc:Separator Step="{Binding Step_Y}"/>

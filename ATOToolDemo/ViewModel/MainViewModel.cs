@@ -210,6 +210,7 @@ namespace ATOToolDemo.ViewModel
                 RaisePropertyChanged();
             }
         }
+
         private BindingList<string> mySinGra;
         public BindingList<string> MySinGra
         {
@@ -762,6 +763,16 @@ namespace ATOToolDemo.ViewModel
                 RaisePropertyChanged();
             }
         }
+        private double width;
+        public double Width
+        {
+            get { return width; }
+            set
+            {
+                width = value;
+                RaisePropertyChanged();
+            }
+        }
 
         private double height_Datagrid;
 
@@ -877,7 +888,7 @@ namespace ATOToolDemo.ViewModel
             MyMultyChartDatas = new BindingList<ChartDatas>();
             MyMultyChartTypes = new BindingList<string>() { "S-V图", "T-S图", "T-V图", "Status图", "ACC图", "不显示" };
             MySinChartTypes = new BindingList<string>() { "S-V图", "T-S图", "T-V图", "Status图", "ACC图", "不显示" };
-            MySinGra = new BindingList<string>() { "正常", "扩大一倍", "缩小一倍" };
+            MySinGra = new BindingList<string>() { "正常", "扩大一倍", "缩小一倍","自适应" };
             Height_Datagrid = Height / 1.3;
             Background_Save = new SolidColorBrush(Colors.Red);
             Background_Change = new SolidColorBrush(Colors.Red);
@@ -994,7 +1005,6 @@ namespace ATOToolDemo.ViewModel
             }
 
         } // 另存为excel文件
-
         private void deleteFileCache()
         {
             try
@@ -1072,6 +1082,7 @@ namespace ATOToolDemo.ViewModel
             {
                 string thisTemp = " ";
                 double Gra_Temp = 1.0;
+                
                 if (LogFileProp_Mult[j].MyGraItem == Granularity.扩大一倍)
                     Gra_Temp = 2;
                 else if (LogFileProp_Mult[j].MyGraItem == Granularity.缩小一倍)
@@ -1103,6 +1114,7 @@ namespace ATOToolDemo.ViewModel
                 if (thisTemp == "T-V图" || thisTemp == "T-S图" || thisTemp == "S-V图")
                 {
                     LiveChartParemeters temp_Chart = new LiveChartParemeters();
+                    temp_Chart.IsShowLabels = true;
                     var mapper = Mappers.Xy<MeasureModel>()
                         .X(model => model.X)
                         .Y(model => model.Y);
@@ -1131,7 +1143,14 @@ namespace ATOToolDemo.ViewModel
                             }
                         }
                         temp_Chart.Title_X = "Time"; temp_Chart.Title_Y = "TrainSpeed";
-                        temp_Chart.Width_MyChart = max_time * 10 * Gra_Temp;
+                        
+                        if (LogFileProp_Mult[j].MyGraItem != Granularity.自适应)
+                            temp_Chart.Width_MyChart = max_time * 10 * Gra_Temp;
+                        else
+                        {
+                            temp_Chart.Width_MyChart = Width;
+                            temp_Chart.IsShowLabels = false;
+                        }
                         titleTemp = "T-V图";
                         temp_Chart.MaxValue_MyChart = max * 1.1;
                         temp_Chart.Step_X = 5;
@@ -1157,7 +1176,14 @@ namespace ATOToolDemo.ViewModel
                             }
                         }
                         temp_Chart.Title_X = "Time"; temp_Chart.Title_Y = "TrainPosition";
-                        temp_Chart.Width_MyChart = max_time * 10 * Gra_Temp;
+                        
+                        if (LogFileProp_Mult[j].MyGraItem != Granularity.自适应)
+                            temp_Chart.Width_MyChart = max_time * 10 * Gra_Temp;
+                        else
+                        {
+                            temp_Chart.Width_MyChart = Width;
+                            temp_Chart.IsShowLabels = false;
+                        }
                         titleTemp = "T-S图";
                         temp_Chart.MaxValue_MyChart = max * 1.1;
                         temp_Chart.Step_X = 5;
@@ -1184,7 +1210,14 @@ namespace ATOToolDemo.ViewModel
                         }
                         temp_Chart.Title_Y = "TrainSpeed";
                         temp_Chart.Title_X = "TrainPosition";
-                        temp_Chart.Width_MyChart = max_position * 10 * Gra_Temp;
+                        
+                        if (LogFileProp_Mult[j].MyGraItem != Granularity.自适应)
+                            temp_Chart.Width_MyChart = max_position * 10 * Gra_Temp;
+                        else
+                        {
+                            temp_Chart.Width_MyChart = Width;
+                            temp_Chart.IsShowLabels = false;
+                        }
                         titleTemp = "S-V图";
                         temp_Chart.MaxValue_MyChart = max * 1.1;
                         if (max_position > 20000)
@@ -1211,6 +1244,7 @@ namespace ATOToolDemo.ViewModel
                 else if (thisTemp == "Status图")
                 {
                     LiveChartParemeters temp_Chart = new LiveChartParemeters();
+                    temp_Chart.IsShowLabels = true;
                     var mapper = Mappers.Xy<MeasureModel>()
                         .X(model => model.X)
                         .Y(model => model.Y);
@@ -1232,7 +1266,14 @@ namespace ATOToolDemo.ViewModel
                     }
                     temp_Chart.MaxValue_MyChart = 2;
                     temp_Chart.Height_MyChart = Height / 2.7;
-                    temp_Chart.Width_MyChart = max * 10 * Gra_Temp; ;
+                    
+                    if (LogFileProp_Mult[j].MyGraItem != Granularity.自适应)
+                        temp_Chart.Width_MyChart = max * 10 * Gra_Temp;
+                    else
+                    {
+                        temp_Chart.Width_MyChart = Width;
+                        temp_Chart.IsShowLabels = false;
+                    }
                     temp_Chart.MinValue_MyChart = 0;
                     if (max > 20000)
                         temp_Chart.Step_X = (int)max / 1000;
@@ -1260,6 +1301,7 @@ namespace ATOToolDemo.ViewModel
                 else if (thisTemp == "ACC图")
                 {
                     LiveChartParemeters temp_Chart = new LiveChartParemeters();
+                    temp_Chart.IsShowLabels = true;
                     var mapper = Mappers.Xy<MeasureModel>()
                         .X(model => model.X)
                         .Y(model => model.Y);
@@ -1304,7 +1346,14 @@ namespace ATOToolDemo.ViewModel
                     temp_Chart.MaxValue_MyChart = max * 1.1;
                     temp_Chart.Height_MyChart = Height / 2.7;
                     temp_Chart.MinValue_MyChart = min * 1.1;
-                    temp_Chart.Width_MyChart = max_position * 20 * Gra_Temp;
+                    
+                    if (LogFileProp_Mult[j].MyGraItem != Granularity.自适应)
+                        temp_Chart.Width_MyChart = max_position * 20 * Gra_Temp;
+                    else
+                    {
+                        temp_Chart.Width_MyChart = Width;
+                        temp_Chart.IsShowLabels = false;
+                    }
                     if (max_position > 20000)
                         temp_Chart.Step_X = (int)max_position / 1000;
                     else
@@ -1421,6 +1470,7 @@ namespace ATOToolDemo.ViewModel
                 MessageBox.Show("发生未知错误，请确认已选择好文件名", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
+            
             string thisTemp = "";
             string thisGra = " ";
             try { thisTemp = MySinChartTypes[MySinChartTypesIdx]; }
@@ -1434,7 +1484,7 @@ namespace ATOToolDemo.ViewModel
             {
                 MessageBox.Show("您尚未选择时间粒度！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
-            }
+            }   
             double times = 1.0;
             if (thisGra == "扩大一倍")
             {
@@ -1444,10 +1494,12 @@ namespace ATOToolDemo.ViewModel
             {
                 times = 0.5;
             }
+            
             MyCharts.Clear();
             if (thisTemp == "T-V图" || thisTemp == "T-S图" || thisTemp == "S-V图")
             {
                 LiveChartParemeters temp_Chart = new LiveChartParemeters();
+                temp_Chart.IsShowLabels = true;
                 var mapper = Mappers.Xy<MeasureModel>()
                     .X(model => model.X)
                     .Y(model => model.Y);
@@ -1476,7 +1528,13 @@ namespace ATOToolDemo.ViewModel
                     }
                     temp_Chart.Title_X = "Time";
                     temp_Chart.Title_Y = "TrainSpeed";
-                    temp_Chart.Width_MyChart = max_time * 10 * times;
+                    if(thisGra!="自适应")
+                        temp_Chart.Width_MyChart = max_time * 10 * times;
+                    else
+                    {
+                        temp_Chart.Width_MyChart = Width;
+                        temp_Chart.IsShowLabels = false;
+                    }
                     titleTemp = "T-V图";
                     temp_Chart.MaxValue_MyChart = max * 1.08;
                     temp_Chart.Step_X = 5;
@@ -1504,7 +1562,14 @@ namespace ATOToolDemo.ViewModel
                     }
                     temp_Chart.Title_X = "Time";
                     temp_Chart.Title_Y = "TrainPosition";
-                    temp_Chart.Width_MyChart = max_time * 10 * times;
+                    
+                    if (thisGra != "自适应")
+                        temp_Chart.Width_MyChart = max_time * 10 * times;
+                    else
+                    {
+                        temp_Chart.Width_MyChart = Width;
+                        temp_Chart.IsShowLabels = false;
+                    }
                     titleTemp = "T-S图";
                     temp_Chart.MaxValue_MyChart = max * 1.08;
                     temp_Chart.Step_X = 5;
@@ -1531,7 +1596,14 @@ namespace ATOToolDemo.ViewModel
                     }
                     temp_Chart.Title_Y = "TrainSpeed";
                     temp_Chart.Title_X = "TrainPosition";
-                    temp_Chart.Width_MyChart = max_position * 10 * times;
+                    
+                    if (thisGra != "自适应")
+                        temp_Chart.Width_MyChart = max_position * 10 * times;
+                    else
+                    {
+                        temp_Chart.Width_MyChart = Width;
+                        temp_Chart.IsShowLabels = false;
+                    }
                     titleTemp = "S-V图";
                     temp_Chart.MaxValue_MyChart = max * 1.08;
                     if (max_position > 20000)
@@ -1557,6 +1629,7 @@ namespace ATOToolDemo.ViewModel
             else if (thisTemp == "Status图")
             {
                 LiveChartParemeters temp_Chart = new LiveChartParemeters();
+                temp_Chart.IsShowLabels = true;
                 var mapper = Mappers.Xy<MeasureModel>()
                     .X(model => model.X)
                     .Y(model => model.Y);
@@ -1579,6 +1652,13 @@ namespace ATOToolDemo.ViewModel
                 temp_Chart.MaxValue_MyChart = 2;
                 temp_Chart.Height_MyChart = Height / 1.3;
                 temp_Chart.Width_MyChart = max * 10 * times;
+                if (thisGra != "自适应")
+                    temp_Chart.Width_MyChart = max * 10 * times;
+                else
+                {
+                    temp_Chart.Width_MyChart = Width;
+                    temp_Chart.IsShowLabels = false;
+                }
                 temp_Chart.MinValue_MyChart = 0;
                 if (max > 20000)
                     temp_Chart.Step_X = (int)max / 1000;
@@ -1606,6 +1686,7 @@ namespace ATOToolDemo.ViewModel
             else if (thisTemp == "ACC图")
             {
                 LiveChartParemeters temp_Chart = new LiveChartParemeters();
+                temp_Chart.IsShowLabels = true;
                 var mapper = Mappers.Xy<MeasureModel>()
                     .X(model => model.X)
                     .Y(model => model.Y);
@@ -1650,7 +1731,14 @@ namespace ATOToolDemo.ViewModel
                 temp_Chart.MaxValue_MyChart = max * 1.08;
                 temp_Chart.Height_MyChart = Height / 1.3;
                 temp_Chart.MinValue_MyChart = min * 1.08;
-                temp_Chart.Width_MyChart = max_position * 20 * times;
+                
+                if (thisGra != "自适应")
+                    temp_Chart.Width_MyChart = max_position * 20 * times;
+                else
+                {
+                    temp_Chart.Width_MyChart = Width;
+                    temp_Chart.IsShowLabels = false;
+                }
                 if (max_position > 20000)
                     temp_Chart.Step_X = (int)max_position / 1000;
                 else
@@ -1845,9 +1933,10 @@ namespace ATOToolDemo.ViewModel
 
         #endregion
 
-        public MainViewModel(double myheight)  //ViewModel构造函数
+        public MainViewModel(double myheight,double mywid)  //ViewModel构造函数
         {
             this.Height = myheight;
+            this.Width = mywid*0.4;
             InitCommands();
             InitProperties();
         }
