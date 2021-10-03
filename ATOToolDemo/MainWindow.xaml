@@ -69,7 +69,8 @@
                                 Text="当前文件 " />
                             <xctk:WatermarkComboBox
                                 Height="21"
-                                Width="auto" 
+                                Width="auto"
+                                
                                 VerticalAlignment="Top"
                                 ItemsSource="{Binding FileNames_Sim}"
                                 SelectedIndex="{Binding Curr_file_idx, Mode=TwoWay}"
@@ -147,6 +148,7 @@
                             Header="指标6"
                             IsReadOnly="True"
                             Text="{Binding Braking_Level}" />
+
                     </Grid>
                     <Fluent:Button
                         Padding="5"
@@ -218,7 +220,7 @@
                             Background="{Binding Background_Change}"
                             BorderBrush="Black"
                             BorderThickness="1"
-                            Visibility="Visible">
+                            Visibility="{Binding Vis_Change}">
 
                             <TextBlock
                                 Padding="5,0"
@@ -236,7 +238,7 @@
                             Background="{Binding Background_Save}"
                             BorderBrush="Black"
                             BorderThickness="1"
-                            Visibility="Visible"
+                            Visibility="{Binding Vis_Save}"
                             >
                             <TextBlock
                                 Padding="5,0"
@@ -277,9 +279,7 @@
                                     x:Name="single_train"
                                     Margin="0,0,5,0"
                                     GroupName="LogFileMode"
-                                    IsChecked="{Binding IsAutoPaintOutDepotTrain}"
-                                    Command="{Binding ShowSinTrainRadio}"
-                                    />
+                                    IsChecked="{Binding IsAutoPaintOutDepotTrain}" />
                                 <TextBlock Text="显示单一列车" />
                             </StackPanel>
                             <StackPanel Orientation="Vertical">
@@ -289,23 +289,24 @@
                                 Header="设置"
                                 IsEnabled="{Binding ElementName=single_train, Path=IsChecked}">
                                     <StackPanel Orientation="Vertical">
-
                                         <StackPanel Orientation="Horizontal">
                                             <StackPanel Margin="5" Orientation="Horizontal">
                                                 <TextBlock
-                                                    Margin="0,0,5,0"
-                                                    VerticalAlignment="Center"
-                                                    Text="文件: " />
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            Text="文件: " />
                                                 <xctk:WatermarkComboBox
-                                                    Width="auto"
-                                                    ItemsSource="{Binding FileNames_Sim}"
-                                                    SelectedIndex="{Binding Curr_fileSingle_idx}"
-                                                    Watermark="选择文件" />
+                                            Width="auto"
+                                            MaxWidth="80"
+                                            ItemsSource="{Binding FileNames_Sim}"
+                                            SelectedIndex="{Binding Curr_fileSingle_idx}"
+                                            Watermark="选择文件" />
                                             </StackPanel>
                                             <xctk:WatermarkComboBox 
                                                         Watermark="图像类型" 
                                                         Margin="0,0,5,0" 
                                                         Width="auto"
+                                                        MaxWidth="50"
                                                         Height="20"
                                                         ItemsSource="{Binding MySinChartTypes}" 
                                                         SelectedIndex="{Binding MySinChartTypesIdx}"
@@ -314,20 +315,20 @@
                                                         Watermark="时间粒度" 
                                                         Margin="0,0,5,0" 
                                                         Width="auto"
+                                                        MaxWidth="50"
                                                         Height="20"
                                                         ItemsSource="{Binding MySinGra}" 
                                                         SelectedIndex="{Binding MySinGraIdx}"
                                                         />
-
-                                        </StackPanel>
-                                        <Button
+                                            <Button
                                         MinWidth="50"
-                                        Margin="0,0,20,0"
-                                        HorizontalAlignment="Right"
-                                        
+                                        Margin="5"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Center"
                                         Content="显示"
                                         Command="{Binding ShowSingleTrain}" 
                                         />
+                                        </StackPanel>
                                     </StackPanel>
                                 </GroupBox>
                             </StackPanel>
@@ -336,9 +337,7 @@
                                     x:Name="multi_train"
                                     Margin="0,0,5,0"
                                     GroupName="LogFileMode"
-                                    IsChecked="{Binding IsAutoPaintInDepotTrain}"
-                                    Command="{Binding ShowMulTrainRadio}"
-                                    />
+                                    IsChecked="{Binding IsAutoPaintInDepotTrain}" />
                                 <TextBlock Text="显示多列车" />
                             </StackPanel>
 
@@ -415,65 +414,50 @@
                                         <!--<RadioButton GroupName="Second_Multy" Content="Status" Margin="5,5" Command="{Binding ChangeStatus}" IsChecked="{Binding MyChartTypes.IsStatusChanged}"/>
                                                     <RadioButton GroupName="Third_Multy" Content="ACC" Margin="5,5" Command="{Binding ChangeAcc}" IsChecked="{Binding MyChartTypes.IsAccChanged}"/>-->
                                     </StackPanel>
-                                    <Grid>
-                                        <Grid.RowDefinitions >
-                                            <RowDefinition Height="150"/>
-                                            <RowDefinition Height="5"/>
-                                        </Grid.RowDefinitions>
-                                        <!--<ScrollViewer Margin="0,5">-->
+                                    <ScrollViewer Margin="0,5">
                                         <DataGrid
-                                            Grid.Row="0"
-                                            Height="auto"
-                                            MinHeight="150"
+                                            Height="100"
                                             VerticalAlignment="Top"
                                             AutoGenerateColumns="False"
-                                            HorizontalScrollBarVisibility="Auto"
+                                            HorizontalScrollBarVisibility="Visible"
                                             ItemsSource="{Binding LogFileProp_Mult, Mode=TwoWay}"
                                             SelectedIndex="{Binding Curr_MultProp_idx,Mode=TwoWay}"
-                                            HorizontalAlignment="Left"
                                             >
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn
                                                     Width="auto"
-                                                    MinWidth="20"
-                                                    Binding="{Binding Number}"
-                                                    Header="序号" 
-                                                    IsReadOnly="True"
-                                                    />
-                                                <DataGridTextColumn
-                                                    Width="auto"
                                                     MinWidth="70"
                                                     Binding="{Binding FileName}"
-                                                    Header="文件" 
-                                                    IsReadOnly="True"
-                                                    />
+                                                    Header="文件" />
+
                                                 <DataGridTextColumn
                                                     Width="auto"
                                                     MinWidth="70"
                                                     Binding="{Binding ChartType}"
-                                                    Header="图像类型"
-                                                    IsReadOnly="True"
-                                                    />
+                                                    Header="图像类型" />
+
                                                 <DataGridComboBoxColumn Header="时间粒度"  
                                                                         Width="auto"
-                                                                        MinWidth="100"
+                                                                        MinWidth="130"
                                                                         SelectedItemBinding="{Binding MyGraItem,Mode=TwoWay}" 
                                                                         ItemsSource="{Binding Source={StaticResource GraKey}}" 
                                                                         />
+                                                <!--<DataGridTemplateColumn
+                                                    Width="*"
+                                                    MinWidth="120"
+                                                    Header="时间粒度">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <ComboBox ItemsSource="{Binding Granularity,Mode=TwoWay}"
+                                                                      SelectedIndex="{Binding Gra_idx,Mode=TwoWay}"
+                                                                      
+                                                                      />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>-->
                                             </DataGrid.Columns>
                                         </DataGrid>
-                                        <GridSplitter
-                                            Grid.Row="1"
-                                            Height="5"
-                                            VerticalAlignment="Top"
-                                            Background="LightGray"
-                                            HorizontalAlignment="Stretch"
-                                            ShowsPreview="True"
-                                            ResizeDirection="Rows"
-                                            Style="{StaticResource gridSplitterStyleForResizeRows}"
-                                            />
-                                    </Grid>
-        <!--</ScrollViewer>-->
+                                    </ScrollViewer>
                                 </StackPanel>
                             </GroupBox>
                         </StackPanel>
@@ -541,7 +525,7 @@
                                             Background="{Binding Background_Change}"
                                             BorderBrush="Black"
                                             BorderThickness="1"
-                                            Visibility="Visible">
+                                            Visibility="{Binding Vis_Change}">
                                             <TextBlock
                                                 Padding="5,0"
                                                 HorizontalAlignment="Center"
@@ -556,7 +540,7 @@
                                             Background="{Binding Background_Save}"
                                             BorderBrush="Black"
                                             BorderThickness="1"
-                                            Visibility="Visible"
+                                            Visibility="{Binding Vis_Save}"
                                             >
                                             <TextBlock
                                                 Padding="5,0"
@@ -570,53 +554,6 @@
                                 </StackPanel>
                             </GroupBox>
                         </StackPanel>
-                    </GroupBox>
-                    <GroupBox BorderBrush="Gray">
-                        <GroupBox.Header>
-                            <TextBlock Foreground="Red" Text="文件缓存区" />
-                        </GroupBox.Header>
-                        <GroupBox
-                                BorderBrush="Gray"
-                                BorderThickness="1"
-                                Header="设置">
-                            <StackPanel Orientation="Horizontal">
-                                <DataGrid
-                                            Height="auto"
-                                            MinHeight="50"
-                                            VerticalAlignment="Top"
-                                            AutoGenerateColumns="False"
-                                            HorizontalScrollBarVisibility="Auto"
-                                            ItemsSource="{Binding MyCache, Mode=TwoWay}"
-                                            SelectedIndex="{Binding MyCache_Idx,Mode=TwoWay}"
-                                            HorizontalAlignment="Left"
-                                            >
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn
-                                                    Width="auto"
-                                                    MinWidth="100"
-                                                    Binding="{Binding FileName}"
-                                                    Header="文件名" 
-                                                    IsReadOnly="True"
-                                                    />
-                                        <DataGridTextColumn
-                                                    Width="auto"
-                                                    MinWidth="100"
-                                                    Binding="{Binding FileType}"
-                                                    Header="文件类型" 
-                                                    IsReadOnly="True"
-                                                    />
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                                <Button
-                                            Margin="5,10"
-                                            Height="20"
-                                            Width="80"
-                                            Padding="10,2"
-                                            Content="删除"
-                                            Command="{Binding DeleteFileCache}"
-                                            />
-                            </StackPanel>
-                        </GroupBox>
                     </GroupBox>
                 </StackPanel>
             </ScrollViewer>
@@ -683,9 +620,8 @@
                        Height="{Binding Height_Datagrid}"
                        VerticalAlignment="Top"
                        AutoGenerateColumns="False"
-                       HorizontalAlignment="Right"
                        HorizontalScrollBarVisibility="Auto"
-                       ItemsSource="{Binding ProcessedData_Asc, Mode=OneTime}"  
+                       ItemsSource="{Binding ProcessedData_Asc, Mode=OneTime}" 
                        >
                     <DataGrid.Columns>
                         <DataGridTextColumn 
@@ -723,8 +659,8 @@
                     Grid.Column="1"
                     Width="5"
                     HorizontalAlignment="Center"
-                    Background="LightGray"
-                    Style="{StaticResource gridSplitterStyleForResizeColumns}" />
+                    Background="White"
+                    Style="{StaticResource gridSplitterStyleForResizeColumns}"/>
                 <DataGrid
                        Grid.Column="2"
                        Height="{Binding Height_Datagrid}"
@@ -734,8 +670,7 @@
                        ItemsSource="{Binding ProcessedData_Asc, Mode=TwoWay}"
                        SelectedIndex="{Binding Curr_Ascpara_idx,Mode=TwoWay}"
                        SelectedValue="{Binding AscData,Mode=TwoWay}"
-                       SelectedValuePath="Data"
-                       HorizontalAlignment="Left"
+                       SelectedValuePath="Data" Grid.ColumnSpan="2" Margin="4.622,0,-0.404,0"
                        >
                     <DataGrid.Columns>
                         <DataGridTextColumn 
@@ -805,7 +740,7 @@
                                 Background="{Binding Background_Change}"
                                 BorderBrush="Black"
                                 BorderThickness="1"
-                                Visibility="Visible"
+                                Visibility="{Binding Vis_Change}"
                                 >
                                 <TextBlock
                                     Padding="5,0"
@@ -822,7 +757,7 @@
                                 Background="{Binding Background_Save}"
                                 BorderBrush="Black"
                                 BorderThickness="1"
-                                Visibility="Visible"
+                                Visibility="{Binding Vis_Save}"
                                 >
                                 <TextBlock
                                     Padding="5,0"
