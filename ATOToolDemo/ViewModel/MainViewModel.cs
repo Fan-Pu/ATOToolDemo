@@ -630,9 +630,9 @@ namespace ATOToolDemo.ViewModel
         {
             get { return ascData; }
             set
-            {
+            {RaisePropertyChanged();
                 ascData = value;
-                if (Last_Ascidx != -1)
+                if (Last_Ascidx != -1&&Last_Ascidx < processedData_Asc.Count)
                 {
                     if (ProcessedData_Asc[Last_Ascidx].Data != Last_AscData)
                     {
@@ -643,7 +643,7 @@ namespace ATOToolDemo.ViewModel
                 }
                 Last_Ascidx = Curr_Ascpara_idx;
                 Last_AscData = AscData;
-                RaisePropertyChanged();
+                
             }
         }
 
@@ -1892,7 +1892,7 @@ namespace ATOToolDemo.ViewModel
                         return;
                     }
                     string fileNames = saveFileDialog.FileName;
-                    StreamWriter ascWrite = new StreamWriter(fileNames);
+                    StreamWriter ascWrite = new StreamWriter(fileNames,false,Encoding.Default);
                     foreach (string item in Save_NewDatas)
                     {
                         ascWrite.WriteLine(item);
@@ -1919,7 +1919,7 @@ namespace ATOToolDemo.ViewModel
                 return false;
             }
 
-            for (int i = 0; i < OriDatas_Asc.Count - 2; i++)
+            for (int i = 0; i < OriDatas_Asc.Count ; i++)
             {
                 string temp = ProcessedData_Asc[i].Name + " = " + ProcessedData_Asc[i].Data_Property + '<' + ProcessedData_Asc[i].Range + '>'
                     + ProcessedData_Asc[i].Data + " @" + ProcessedData_Asc[i].Tips;
