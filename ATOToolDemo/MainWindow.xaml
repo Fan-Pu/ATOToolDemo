@@ -409,7 +409,7 @@
                                             Grid.Row="0"
                                             Height="auto"
                                             MinHeight="150"
-                                            HorizontalAlignment="Stretch"
+                                            HorizontalAlignment="Left"
                                             VerticalAlignment="Stretch"
                                             AutoGenerateColumns="False"
                                             HorizontalScrollBarVisibility="Auto"
@@ -557,7 +557,7 @@
                                 <DataGrid
                                     Height="auto"
                                     MinHeight="50"
-                                    HorizontalAlignment="Stretch"
+                                    HorizontalAlignment="Left"
                                     VerticalAlignment="Stretch"
                                     HorizontalContentAlignment="Stretch"
                                     AutoGenerateColumns="False"

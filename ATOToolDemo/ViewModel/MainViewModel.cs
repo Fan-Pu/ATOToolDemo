@@ -630,9 +630,10 @@ namespace ATOToolDemo.ViewModel
         {
             get { return ascData; }
             set
-            {RaisePropertyChanged();
+            {
+                RaisePropertyChanged();
                 ascData = value;
-                if (Last_Ascidx != -1&&Last_Ascidx < processedData_Asc.Count)
+                if (Last_Ascidx != -1 && Last_Ascidx < processedData_Asc.Count)
                 {
                     if (ProcessedData_Asc[Last_Ascidx].Data != Last_AscData)
                     {
@@ -643,7 +644,7 @@ namespace ATOToolDemo.ViewModel
                 }
                 Last_Ascidx = Curr_Ascpara_idx;
                 Last_AscData = AscData;
-                
+
             }
         }
 
@@ -888,7 +889,7 @@ namespace ATOToolDemo.ViewModel
             MyMultyChartDatas = new BindingList<ChartDatas>();
             MyMultyChartTypes = new BindingList<string>() { "S-V图", "T-S图", "T-V图", "Status图", "ACC图", "不显示" };
             MySinChartTypes = new BindingList<string>() { "S-V图", "T-S图", "T-V图", "Status图", "ACC图", "不显示" };
-            MySinGra = new BindingList<string>() { "正常", "扩大一倍", "缩小一倍","自适应" };
+            MySinGra = new BindingList<string>() { "正常", "扩大一倍", "缩小一倍", "自适应" };
             Height_Datagrid = Height / 1.3;
             Background_Save = new SolidColorBrush(Colors.Red);
             Background_Change = new SolidColorBrush(Colors.Red);
@@ -1005,23 +1006,55 @@ namespace ATOToolDemo.ViewModel
             }
 
         } // 另存为excel文件
+
+        private void deleteDataGridFile(string filename)
+        {
+            try
+            {
+                int len = logFileProp_Mult.Count;
+                for (int i = 0; i < LogFileProp_Mult.Count; i++)
+                {
+                    if (logFileProp_Mult[i].FileName == filename && LogFileProp_Mult.Count != 0)
+                    {
+                        logFileProp_Mult.RemoveAt(i);
+                        i = i - 1;
+
+                    }
+                }
+            }
+            catch
+            {
+                MessageBox.Show("删除文件失败！请确认是否选中正确的文件！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
         private void deleteFileCache()
         {
             try
             {
-                if (myCache[MyCache_Idx].FileType == "ASC文件")
+                MessageBoxResult result = MessageBox.Show("你确认想删除这个文件缓存吗", "提示", MessageBoxButton.YesNoCancel);
+                switch (result)
                 {
-                    string filename = myCache[MyCache_Idx].FileName;
-                    AscSimFileNames.Remove(filename);
-                    AscFileNames.Remove(filename);
-                    MyCache.RemoveAt(MyCache_Idx);
-                }
-                else
-                {
-                    string filename = myCache[MyCache_Idx].FileName;
-                    FileNames_Sim.Remove(filename);
-                    FileNames.Remove(filename);
-                    MyCache.RemoveAt(MyCache_Idx);
+                    case MessageBoxResult.Yes:
+                        if (myCache[MyCache_Idx].FileType == "ASC文件")
+                        {
+                            string filename = myCache[MyCache_Idx].FileName;
+                            AscSimFileNames.Remove(filename);
+                            AscFileNames.RemoveAt(MyCache_Idx);
+                            MyCache.RemoveAt(MyCache_Idx);
+                        }
+                        else
+                        {
+                            string filename = myCache[MyCache_Idx].FileName;
+                            FileNames_Sim.Remove(filename);
+                            FileNames.RemoveAt(MyCache_Idx);
+                            MyCache.RemoveAt(MyCache_Idx);
+                            deleteDataGridFile(filename);
+                        }
+                        break;
+                    case MessageBoxResult.No:            
+                        break;
+                    case MessageBoxResult.Cancel:
+                        break;
                 }
             }
             catch
@@ -1082,7 +1115,7 @@ namespace ATOToolDemo.ViewModel
             {
                 string thisTemp = " ";
                 double Gra_Temp = 1.0;
-                
+
                 if (LogFileProp_Mult[j].MyGraItem == Granularity.扩大一倍)
                     Gra_Temp = 2;
                 else if (LogFileProp_Mult[j].MyGraItem == Granularity.缩小一倍)
@@ -1143,7 +1176,7 @@ namespace ATOToolDemo.ViewModel
                             }
                         }
                         temp_Chart.Title_X = "Time"; temp_Chart.Title_Y = "TrainSpeed";
-                        
+
                         if (LogFileProp_Mult[j].MyGraItem != Granularity.自适应)
                             temp_Chart.Width_MyChart = max_time * 10 * Gra_Temp;
                         else
@@ -1176,7 +1209,7 @@ namespace ATOToolDemo.ViewModel
                             }
                         }
                         temp_Chart.Title_X = "Time"; temp_Chart.Title_Y = "TrainPosition";
-                        
+
                         if (LogFileProp_Mult[j].MyGraItem != Granularity.自适应)
                             temp_Chart.Width_MyChart = max_time * 10 * Gra_Temp;
                         else
@@ -1210,7 +1243,7 @@ namespace ATOToolDemo.ViewModel
                         }
                         temp_Chart.Title_Y = "TrainSpeed";
                         temp_Chart.Title_X = "TrainPosition";
-                        
+
                         if (LogFileProp_Mult[j].MyGraItem != Granularity.自适应)
                             temp_Chart.Width_MyChart = max_position * 10 * Gra_Temp;
                         else
@@ -1266,7 +1299,7 @@ namespace ATOToolDemo.ViewModel
                     }
                     temp_Chart.MaxValue_MyChart = 2;
                     temp_Chart.Height_MyChart = Height / 2.7;
-                    
+
                     if (LogFileProp_Mult[j].MyGraItem != Granularity.自适应)
                         temp_Chart.Width_MyChart = max * 10 * Gra_Temp;
                     else
@@ -1346,7 +1379,7 @@ namespace ATOToolDemo.ViewModel
                     temp_Chart.MaxValue_MyChart = max * 1.1;
                     temp_Chart.Height_MyChart = Height / 2.7;
                     temp_Chart.MinValue_MyChart = min * 1.1;
-                    
+
                     if (LogFileProp_Mult[j].MyGraItem != Granularity.自适应)
                         temp_Chart.Width_MyChart = max_position * 20 * Gra_Temp;
                     else
@@ -1397,7 +1430,6 @@ namespace ATOToolDemo.ViewModel
                 }
             }
         }
-
         private void deleteMultTrain()
         {
 
@@ -1470,7 +1502,7 @@ namespace ATOToolDemo.ViewModel
                 MessageBox.Show("发生未知错误，请确认已选择好文件名", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
-            
+
             string thisTemp = "";
             string thisGra = " ";
             try { thisTemp = MySinChartTypes[MySinChartTypesIdx]; }
@@ -1484,7 +1516,7 @@ namespace ATOToolDemo.ViewModel
             {
                 MessageBox.Show("您尚未选择时间粒度！", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
-            }   
+            }
             double times = 1.0;
             if (thisGra == "扩大一倍")
             {
@@ -1494,7 +1526,7 @@ namespace ATOToolDemo.ViewModel
             {
                 times = 0.5;
             }
-            
+
             MyCharts.Clear();
             if (thisTemp == "T-V图" || thisTemp == "T-S图" || thisTemp == "S-V图")
             {
@@ -1528,7 +1560,7 @@ namespace ATOToolDemo.ViewModel
                     }
                     temp_Chart.Title_X = "Time";
                     temp_Chart.Title_Y = "TrainSpeed";
-                    if(thisGra!="自适应")
+                    if (thisGra != "自适应")
                         temp_Chart.Width_MyChart = max_time * 10 * times;
                     else
                     {
@@ -1562,7 +1594,7 @@ namespace ATOToolDemo.ViewModel
                     }
                     temp_Chart.Title_X = "Time";
                     temp_Chart.Title_Y = "TrainPosition";
-                    
+
                     if (thisGra != "自适应")
                         temp_Chart.Width_MyChart = max_time * 10 * times;
                     else
@@ -1596,7 +1628,7 @@ namespace ATOToolDemo.ViewModel
                     }
                     temp_Chart.Title_Y = "TrainSpeed";
                     temp_Chart.Title_X = "TrainPosition";
-                    
+
                     if (thisGra != "自适应")
                         temp_Chart.Width_MyChart = max_position * 10 * times;
                     else
@@ -1731,7 +1763,7 @@ namespace ATOToolDemo.ViewModel
                 temp_Chart.MaxValue_MyChart = max * 1.08;
                 temp_Chart.Height_MyChart = Height / 1.3;
                 temp_Chart.MinValue_MyChart = min * 1.08;
-                
+
                 if (thisGra != "自适应")
                     temp_Chart.Width_MyChart = max_position * 20 * times;
                 else
@@ -1892,7 +1924,7 @@ namespace ATOToolDemo.ViewModel
                         return;
                     }
                     string fileNames = saveFileDialog.FileName;
-                    StreamWriter ascWrite = new StreamWriter(fileNames,false,Encoding.Default);
+                    StreamWriter ascWrite = new StreamWriter(fileNames, false, Encoding.Default);
                     foreach (string item in Save_NewDatas)
                     {
                         ascWrite.WriteLine(item);
@@ -1919,7 +1951,7 @@ namespace ATOToolDemo.ViewModel
                 return false;
             }
 
-            for (int i = 0; i < OriDatas_Asc.Count ; i++)
+            for (int i = 0; i < OriDatas_Asc.Count; i++)
             {
                 string temp = ProcessedData_Asc[i].Name + " = " + ProcessedData_Asc[i].Data_Property + '<' + ProcessedData_Asc[i].Range + '>'
                     + ProcessedData_Asc[i].Data + " @" + ProcessedData_Asc[i].Tips;
@@ -1933,10 +1965,10 @@ namespace ATOToolDemo.ViewModel
 
         #endregion
 
-        public MainViewModel(double myheight,double mywid)  //ViewModel构造函数
+        public MainViewModel(double myheight, double mywid)  //ViewModel构造函数
         {
             this.Height = myheight;
-            this.Width = mywid*0.4;
+            this.Width = mywid * 0.4;
             InitCommands();
             InitProperties();
         }
