@@ -663,9 +663,8 @@
                 </Grid.ColumnDefinitions>
                 <DataGrid
                     Grid.Column="0"
-                    Height="{Binding Height_Datagrid}"
                     HorizontalAlignment="Stretch"
-                    VerticalAlignment="Top"
+                    VerticalAlignment="Stretch"
                     AutoGenerateColumns="False"
                     CanUserResizeColumns="True"
                     HorizontalScrollBarVisibility="Auto"
@@ -709,9 +708,8 @@
                     Style="{StaticResource gridSplitterStyleForResizeColumns}" />
                 <DataGrid
                     Grid.Column="2"
-                    Height="{Binding Height_Datagrid}"
                     HorizontalAlignment="Stretch"
-                    VerticalAlignment="Top"
+                    VerticalAlignment="Stretch"
                     AutoGenerateColumns="False"
                     CanUserResizeColumns="True"
                     HorizontalScrollBarVisibility="Auto"

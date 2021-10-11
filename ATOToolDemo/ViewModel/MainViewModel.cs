@@ -1031,7 +1031,7 @@ namespace ATOToolDemo.ViewModel
         {
             try
             {
-                MessageBoxResult result = MessageBox.Show("你确认想删除这个文件缓存吗", "提示", MessageBoxButton.YesNoCancel);
+                MessageBoxResult result = MessageBox.Show("是否确认删除？", "提示", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 switch (result)
                 {
                     case MessageBoxResult.Yes:
