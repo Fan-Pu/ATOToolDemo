@@ -33,12 +33,13 @@ namespace ATOToolDemo
             InitializeComponent();
             #region 启动时串口最大化显示
             Rect rc = SystemParameters.WorkArea; //获取工作区大小
+            double scale = 0.8;
             this.Left = 0; //设置位置
             this.Top = 0;
-            this.Width = rc.Width;
-            this.Height = rc.Height;
+            this.Width = rc.Width * scale;
+            this.Height = rc.Height * scale;
             #endregion
-            this.DataContext = new MainViewModel(rc.Height,rc.Width);
+            this.DataContext = new MainViewModel(rc.Height * scale, rc.Width * scale);
             Customer cm = new Customer();
             cm.myGra = Granularity.正常;
         }
