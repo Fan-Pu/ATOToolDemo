@@ -262,110 +262,7 @@ namespace ATOToolDemo.ViewModel
             {
                 curr_fileMult_idx = value;
                 RaisePropertyChanged();
-                if (Curr_fileMult_idx >= 0)
-                    Filename_logMult = FileNames[Curr_fileMult_idx];
-            }
-        }
-
-        private string filename_logMult;
-        public string Filename_logMult
-        {
-            get { return filename_logMult; }
-            set
-            {
-                filename_logMult = value;
-                RaisePropertyChanged();
-                ExcelHelper excelhelper_Mult = new ExcelHelper(Filename_logMult);
-                Data_Mult = excelhelper_Mult.ExcelToDataTable("sheet1", true);
-                //TrainNameList_LogMult = new BindingList<ComboBoxItem>();
-                for (int i = 1; i < Data_Mult.Rows.Count - 3000; i++)
-                {
-                    var item = new ComboBoxItem()
-                    {
-                        Content = Data_Mult.Rows[i][0]
-                    };
-                    //TrainNameList_LogMult.Add(item);
-                }
-                #region 临时变量初始化
-                ChartDatas paraTemp = new ChartDatas();
-                paraTemp.Time = new BindingList<double>();
-                paraTemp.Speed = new BindingList<double>();
-                paraTemp.Status = new BindingList<double>();
-                paraTemp.TargetAcc = new BindingList<double>();
-                paraTemp.TargetSpeed = new BindingList<double>();
-                paraTemp.TrainPosition = new BindingList<double>();
-                paraTemp.TrainAcc = new BindingList<double>();
-                paraTemp.DeltaAcc = new BindingList<double>();
-                Double temp = 0;
-                #endregion
-                for (int i = 1; i < Data_Mult.Rows.Count; i++)
-                {
-                    if (Data_Mult.Rows[i][15].ToString() != "Error" &&
-                        (paraTemp.TrainPosition.Count - 1 < 0 ||
-                        Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp != paraTemp.TrainPosition[paraTemp.TrainPosition.Count - 1])
-                        && Double.Parse(Data_Mult.Rows[i][9].ToString()) != 0)
-                    {
-                        if (paraTemp.TrainPosition.Count - 1 < 0)
-                        {
-                            paraTemp.Time.Add(((i - 1) * 0.25));
-                            paraTemp.Speed.Add(Double.Parse(Data_Mult.Rows[i][2].ToString()));
-                            paraTemp.TargetSpeed.Add(Double.Parse(Data_Mult.Rows[i][3].ToString()));
-                            paraTemp.TargetAcc.Add(Double.Parse(Data_Mult.Rows[i][6].ToString()));
-                            paraTemp.TrainAcc.Add(Double.Parse(Data_Mult.Rows[i][6].ToString()));
-                            paraTemp.DeltaAcc.Add(Double.Parse(Data_Mult.Rows[i][7].ToString()));
-                            paraTemp.TrainPosition.Add(Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp);
-                            if (Data_Mult.Rows[i][15].ToString() == "Traction")
-                                paraTemp.Status.Add(2.0);
-                            else if (Data_Mult.Rows[i][15].ToString() == "Coast")
-                                paraTemp.Status.Add(1.0);
-                            else if (Data_Mult.Rows[i][15].ToString() == "Brake")
-                                paraTemp.Status.Add(0.0);
-                            continue;
-                        }
-                        else if (paraTemp.TrainPosition[paraTemp.TrainPosition.Count - 1] - Double.Parse(Data_Mult.Rows[i][9].ToString()) - temp < 0.1 &&
-                            paraTemp.TrainPosition[paraTemp.TrainPosition.Count - 1] - Double.Parse(Data_Mult.Rows[i][9].ToString()) - temp > 0)
-                            continue;
-                        paraTemp.Time.Add(((i - 1) * 0.25));
-                        paraTemp.Speed.Add(Double.Parse(Data_Mult.Rows[i][2].ToString()));
-                        paraTemp.TargetSpeed.Add(Double.Parse(Data_Mult.Rows[i][3].ToString()));
-                        if (Double.Parse(Data_Mult.Rows[i][6].ToString()) - paraTemp.TargetAcc[paraTemp.TrainAcc.Count - 1] > 10 || Double.Parse(Data_Mult.Rows[i][6].ToString()) - paraTemp.TrainAcc[paraTemp.TrainAcc.Count - 1] < -10)
-                            paraTemp.TrainAcc.Add(paraTemp.TrainAcc[paraTemp.TrainAcc.Count - 1]);
-                        else
-                            paraTemp.TrainAcc.Add(Double.Parse(Data_Mult.Rows[i][6].ToString()));
-                        if (Double.Parse(Data_Mult.Rows[i][5].ToString()) - paraTemp.TargetAcc[paraTemp.TargetAcc.Count - 1] > 10 || Double.Parse(Data_Mult.Rows[i][5].ToString()) - paraTemp.TargetAcc[paraTemp.TargetAcc.Count - 1] < -10)
-                            paraTemp.TargetAcc.Add(paraTemp.TargetAcc[paraTemp.TargetAcc.Count - 1]);
-                        else
-                            paraTemp.TargetAcc.Add(Double.Parse(Data_Mult.Rows[i][5].ToString()));
-                        if (Double.Parse(Data_Mult.Rows[i][7].ToString()) > 1000 || Double.Parse(Data_Mult.Rows[i][7].ToString()) < -1000)
-                            paraTemp.DeltaAcc.Add(1.0);
-                        else
-                            if (Double.Parse(Data_Mult.Rows[i][7].ToString()) - paraTemp.DeltaAcc[paraTemp.DeltaAcc.Count - 1] > 10 || Double.Parse(Data_Mult.Rows[i][7].ToString()) - paraTemp.DeltaAcc[paraTemp.DeltaAcc.Count - 1] < -10)
-                            paraTemp.DeltaAcc.Add(paraTemp.DeltaAcc[paraTemp.DeltaAcc.Count - 1]);
-                        else
-                            paraTemp.DeltaAcc.Add(Double.Parse(Data_Mult.Rows[i][7].ToString()));
-                        if (paraTemp.TrainPosition.Count == 0)
-                            paraTemp.TrainPosition.Add(Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp);
-                        else
-                        {
-                            if (Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp > paraTemp.TrainPosition[paraTemp.TrainPosition.Count - 1])
-                                paraTemp.TrainPosition.Add(Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp);
-                            else
-                            {
-                                temp = paraTemp.TrainPosition[paraTemp.TrainPosition.Count - 1];
-                                paraTemp.TrainPosition.Add(Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp);
-                            }
-                        }
-                        if (Data_Mult.Rows[i][15].ToString() == "Traction")
-                            paraTemp.Status.Add(2.0);
-                        else if (Data_Mult.Rows[i][15].ToString() == "Coast")
-                            paraTemp.Status.Add(1.0);
-                        else if (Data_Mult.Rows[i][15].ToString() == "Brake")
-                            paraTemp.Status.Add(0.0);
-                        else
-                            paraTemp.Status.Add(-1.0);
-                    }
-                }
-                MyMultyChartDatas.Add(paraTemp);
+                
             }
         }
 
@@ -954,12 +851,93 @@ namespace ATOToolDemo.ViewModel
                 var start_idx = openfiledialog.FileName.LastIndexOf("\\") + 1;
                 string SimName = openfiledialog.FileName.Substring(start_idx, openfiledialog.FileName.LastIndexOf(".") - start_idx);
                 FileNames_Sim.Add(SimName);
-                FileCache temp = new FileCache();
-                temp.FileName = SimName;
-                temp.FileType = "日志文件";
-                myCache.Add(temp);
+                ExcelHelper excelhelper_Mult = new ExcelHelper(openfiledialog.FileName);
+                Data_Mult = excelhelper_Mult.ExcelToDataTable("sheet1", true);
+                #region 临时变量初始化
+                ChartDatas paraTemp = new ChartDatas();
+                paraTemp.Time = new BindingList<double>();
+                paraTemp.Speed = new BindingList<double>();
+                paraTemp.Status = new BindingList<double>();
+                paraTemp.TargetAcc = new BindingList<double>();
+                paraTemp.TargetSpeed = new BindingList<double>();
+                paraTemp.TrainPosition = new BindingList<double>();
+                paraTemp.TrainAcc = new BindingList<double>();
+                paraTemp.DeltaAcc = new BindingList<double>();
+                Double temp = 0;
+                #endregion
+                for (int i = 1; i < Data_Mult.Rows.Count; i++)
+                {
+                    if (Data_Mult.Rows[i][15].ToString() != "Error" &&
+                        (paraTemp.TrainPosition.Count - 1 < 0 ||
+                        Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp != paraTemp.TrainPosition[paraTemp.TrainPosition.Count - 1])
+                        && Double.Parse(Data_Mult.Rows[i][9].ToString()) != 0)
+                    {
+                        if (paraTemp.TrainPosition.Count - 1 < 0)
+                        {
+                            paraTemp.Time.Add(((i - 1) * 0.25));
+                            paraTemp.Speed.Add(Double.Parse(Data_Mult.Rows[i][2].ToString()));
+                            paraTemp.TargetSpeed.Add(Double.Parse(Data_Mult.Rows[i][3].ToString()));
+                            paraTemp.TargetAcc.Add(Double.Parse(Data_Mult.Rows[i][6].ToString()));
+                            paraTemp.TrainAcc.Add(Double.Parse(Data_Mult.Rows[i][6].ToString()));
+                            paraTemp.DeltaAcc.Add(Double.Parse(Data_Mult.Rows[i][7].ToString()));
+                            paraTemp.TrainPosition.Add(Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp);
+                            if (Data_Mult.Rows[i][15].ToString() == "Traction")
+                                paraTemp.Status.Add(2.0);
+                            else if (Data_Mult.Rows[i][15].ToString() == "Coast")
+                                paraTemp.Status.Add(1.0);
+                            else if (Data_Mult.Rows[i][15].ToString() == "Brake")
+                                paraTemp.Status.Add(0.0);
+                            continue;
+                        }
+                        else if (paraTemp.TrainPosition[paraTemp.TrainPosition.Count - 1] - Double.Parse(Data_Mult.Rows[i][9].ToString()) - temp < 0.1 &&
+                            paraTemp.TrainPosition[paraTemp.TrainPosition.Count - 1] - Double.Parse(Data_Mult.Rows[i][9].ToString()) - temp > 0)
+                            continue;
+                        paraTemp.Time.Add(((i - 1) * 0.25));
+                        paraTemp.Speed.Add(Double.Parse(Data_Mult.Rows[i][2].ToString()));
+                        paraTemp.TargetSpeed.Add(Double.Parse(Data_Mult.Rows[i][3].ToString()));
+                        if (Double.Parse(Data_Mult.Rows[i][6].ToString()) - paraTemp.TargetAcc[paraTemp.TrainAcc.Count - 1] > 10 || Double.Parse(Data_Mult.Rows[i][6].ToString()) - paraTemp.TrainAcc[paraTemp.TrainAcc.Count - 1] < -10)
+                            paraTemp.TrainAcc.Add(paraTemp.TrainAcc[paraTemp.TrainAcc.Count - 1]);
+                        else
+                            paraTemp.TrainAcc.Add(Double.Parse(Data_Mult.Rows[i][6].ToString()));
+                        if (Double.Parse(Data_Mult.Rows[i][5].ToString()) - paraTemp.TargetAcc[paraTemp.TargetAcc.Count - 1] > 10 || Double.Parse(Data_Mult.Rows[i][5].ToString()) - paraTemp.TargetAcc[paraTemp.TargetAcc.Count - 1] < -10)
+                            paraTemp.TargetAcc.Add(paraTemp.TargetAcc[paraTemp.TargetAcc.Count - 1]);
+                        else
+                            paraTemp.TargetAcc.Add(Double.Parse(Data_Mult.Rows[i][5].ToString()));
+                        if (Double.Parse(Data_Mult.Rows[i][7].ToString()) > 1000 || Double.Parse(Data_Mult.Rows[i][7].ToString()) < -1000)
+                            paraTemp.DeltaAcc.Add(1.0);
+                        else
+                            if (Double.Parse(Data_Mult.Rows[i][7].ToString()) - paraTemp.DeltaAcc[paraTemp.DeltaAcc.Count - 1] > 10 || Double.Parse(Data_Mult.Rows[i][7].ToString()) - paraTemp.DeltaAcc[paraTemp.DeltaAcc.Count - 1] < -10)
+                            paraTemp.DeltaAcc.Add(paraTemp.DeltaAcc[paraTemp.DeltaAcc.Count - 1]);
+                        else
+                            paraTemp.DeltaAcc.Add(Double.Parse(Data_Mult.Rows[i][7].ToString()));
+                        if (paraTemp.TrainPosition.Count == 0)
+                            paraTemp.TrainPosition.Add(Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp);
+                        else
+                        {
+                            if (Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp > paraTemp.TrainPosition[paraTemp.TrainPosition.Count - 1])
+                                paraTemp.TrainPosition.Add(Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp);
+                            else
+                            {
+                                temp = paraTemp.TrainPosition[paraTemp.TrainPosition.Count - 1];
+                                paraTemp.TrainPosition.Add(Double.Parse(Data_Mult.Rows[i][9].ToString()) + temp);
+                            }
+                        }
+                        if (Data_Mult.Rows[i][15].ToString() == "Traction")
+                            paraTemp.Status.Add(2.0);
+                        else if (Data_Mult.Rows[i][15].ToString() == "Coast")
+                            paraTemp.Status.Add(1.0);
+                        else if (Data_Mult.Rows[i][15].ToString() == "Brake")
+                            paraTemp.Status.Add(0.0);
+                        else
+                            paraTemp.Status.Add(-1.0);
+                    }
+                }
+                MyMultyChartDatas.Add(paraTemp);
+                FileCache temp2 = new FileCache();
+                temp2.FileName = SimName;
+                temp2.FileType = "日志文件";
+                myCache.Add(temp2);
                 MessageBox.Show("读取EXCEl文件成功", "通知", MessageBoxButton.OK, MessageBoxImage.Information);
-
             }
         }  //日志中读取文件
         private void saveLogFileToExcelCommand()
@@ -1006,19 +984,17 @@ namespace ATOToolDemo.ViewModel
             }
 
         } // 另存为excel文件
-
         private void deleteDataGridFile(string filename)
         {
             try
             {
-                int len = logFileProp_Mult.Count;
+                
                 for (int i = 0; i < LogFileProp_Mult.Count; i++)
                 {
-                    if (logFileProp_Mult[i].FileName == filename && LogFileProp_Mult.Count != 0)
+                    if (LogFileProp_Mult[i].FileName == filename && LogFileProp_Mult.Count != 0)
                     {
                         logFileProp_Mult.RemoveAt(i);
                         i = i - 1;
-
                     }
                 }
             }
@@ -1035,23 +1011,26 @@ namespace ATOToolDemo.ViewModel
                 switch (result)
                 {
                     case MessageBoxResult.Yes:
-                        if (myCache[MyCache_Idx].FileType == "ASC文件")
+                        if (MyCache[MyCache_Idx].FileType == "ASC文件")
                         {
                             string filename = myCache[MyCache_Idx].FileName;
+                            int idx = AscSimFileNames.IndexOf(filename);
                             AscSimFileNames.Remove(filename);
-                            AscFileNames.RemoveAt(MyCache_Idx);
+                            AscFileNames.RemoveAt(idx);
                             MyCache.RemoveAt(MyCache_Idx);
                         }
                         else
                         {
-                            string filename = myCache[MyCache_Idx].FileName;
+                            string filename = MyCache[MyCache_Idx].FileName;
+                            int idx = FileNames_Sim.IndexOf(filename);
                             FileNames_Sim.Remove(filename);
-                            FileNames.RemoveAt(MyCache_Idx);
+                            FileNames.RemoveAt(idx);
                             MyCache.RemoveAt(MyCache_Idx);
                             deleteDataGridFile(filename);
+                            MyMultyChartDatas.RemoveAt(idx);
                         }
                         break;
-                    case MessageBoxResult.No:            
+                    case MessageBoxResult.No:
                         break;
                     case MessageBoxResult.Cancel:
                         break;
@@ -1059,7 +1038,7 @@ namespace ATOToolDemo.ViewModel
             }
             catch
             {
-                MessageBox.Show("删除文件失败！请确认是否选中对应文件！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("删除文件失败！请确认是否选中文件！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         #endregion
@@ -1105,7 +1084,6 @@ namespace ATOToolDemo.ViewModel
             {
                 MessageBox.Show("发生未知错误，请确认已选择好各项指标", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
 
         } //多列车
         private void showMultTrain()
